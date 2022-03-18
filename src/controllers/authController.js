@@ -1,13 +1,15 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-const AppError = require('../../utils/AppError');
-const catchAsync = require('../../utils/catchAsync');
+const AppError = require("../utils/AppError");
+const catchAsync = require("../utils/catchAsync");
 
 //@desc         FOR TESTING: Login = uid
 //@route        POST /api/auth/login
 //@access       PUBLIC
-exports.login = catchAsync(async (req, res, next) => {
-  createSendToken({ _id: 'test' }, 200, res);
+const login = catchAsync(async (req, res, next) => {
+  return next(new AppError("Login Error", 404));
+
+  createSendToken({ _id: "test" }, 200, res);
 });
 
 const createSendToken = (user, statusCode, res) => {
@@ -24,3 +26,5 @@ const signToken = (id) => {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
+
+module.exports = { login };
