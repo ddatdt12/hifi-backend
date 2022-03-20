@@ -1,10 +1,12 @@
-const express = require("express");
+const express = require('express');
 
 const router = express.Router();
-const userRoute = require("./user");
+const userRoute = require('./user');
+const categoryRoute = require('./category');
+const skillRoute = require('./skill');
 
-const { requireAdmin } = require("../../middlewares/auth");
-
-router.use("/users", userRoute);
+router.use('/users', userRoute);
+router.use('/categories', categoryRoute);
+router.use('/skills', skillRoute);
 
 module.exports = router;
