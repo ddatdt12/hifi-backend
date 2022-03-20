@@ -18,7 +18,12 @@ const PostSchema = new Schema(
 			negotiable: Boolean,
 		},
 		description: String,
-		skillTags: [String],
+		skillTags: [
+			{
+				type: mongoose.Schema.ObjectId,
+				ref: 'Skill',
+			},
+		],
 		preferedLangs: [String],
 
 		// FIXME: Need change in the future when location of recruiters is fixed

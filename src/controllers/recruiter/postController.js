@@ -5,7 +5,10 @@ const Post = require('../../models/Post');
 //@route        GET /api/recruiter/posts
 //@access       PRIVATE
 const getAllPost = catchAsync(async (req, res) => {
-	const posts = await Post.find({}).lean();
+	const posts = await Post.find({})
+		.populate('jobCategories')
+		.populate('skillTags')
+		.lean();
 	res.status(200).json({
 		message: 'Get all post successfully',
 		posts,
