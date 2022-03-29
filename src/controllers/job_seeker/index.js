@@ -1,3 +1,3 @@
 module.exports = {
-  postController: require("./postController"),
+	postController: require('./postController'),
 };
