@@ -8,7 +8,7 @@ const AppError = require('./src/utils/AppError');
 const authRoute = require('./src/routes/auth');
 const adminRoute = require('./src/routes/admin');
 const jobSeekerRoute = require('./src/routes/job_seeker');
-const recruiterRoute = require('./src/routes/recruiter');
+const employerRoute = require('./src/routes/employer');
 const suggestionRoute = require('./src/routes/suggestion');
 //Config
 const app = express();
@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 app.use('/api/admin', adminRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/job-seeker', jobSeekerRoute);
-app.use('/api/recruiter', recruiterRoute);
+app.use('/api/employer', employerRoute);
 app.use('/api/suggestion', suggestionRoute);
 
 app.all('*', (req, res, next) => {
