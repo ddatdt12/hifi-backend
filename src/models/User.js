@@ -3,9 +3,8 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
 	{
-		uid: {
+		_id: {
 			type: String,
-			required: true,
 		},
 		signInProvider: {
 			type: String,
@@ -14,10 +13,16 @@ const UserSchema = new Schema(
 			type: String,
 			required: true,
 		},
-		name: {
+		password: {
+			type: String,
+		},
+		displayName: {
 			type: String,
 			required: [true, 'Vui lòng nhập tên'],
-			maxlength: 30,
+			maxlength: 80,
+		},
+		photoUrl: {
+			type: String,
 		},
 	},
 	{
