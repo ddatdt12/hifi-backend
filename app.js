@@ -11,26 +11,26 @@ const AppError = require('./src/utils/AppError');
 
 const routesDirName = `${__dirname}/src/routes/`;
 
-// Require all routes
-fs.readdirSync(routesDirName)
-	.filter((file) => fs.statSync(path.join(routesDirName, file)).isDirectory()) // filter only folder
-	.map((folder) => {
-		require(path.join(routesDirName, folder))(app);
-	});
-
 //Config
-app.use(
-	cors({
-		origin: true,
-		credentials: true,
-	})
-);
+var corsOptions = {
+	origin: true,
+	credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
 if (process.env.NODE_ENV !== 'production') {
 	app.use(morgan('dev'));
 }
+
+// Require all routes
+fs.readdirSync(routesDirName)
+	.filter((file) => fs.statSync(path.join(routesDirName, file)).isDirectory()) // filter only folder
+	.map((folder) => {
+		require(path.join(routesDirName, folder))(app);
+	});
 
 app.get('/', (req, res) => {
 	res.send('HELLO HiFi');
