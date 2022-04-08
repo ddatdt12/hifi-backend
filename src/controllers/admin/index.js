@@ -1,6 +1,6 @@
 module.exports = {
 	userController: require('./userController'),
 	categoryController: require('./categoryController'),
-	subCategoryController: require('./subCategoryController'),
+	subcategoryController: require('./subcategoryController'),
 	skillController: require('./skillController'),
 };
