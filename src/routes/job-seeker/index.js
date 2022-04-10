@@ -7,6 +7,5 @@ const authRoute = require('./auth');
 module.exports = (app) => {
 	router.use('/posts', postRoute);
 	router.use('/auth', authRoute);
-
-	app.use('/api/employer', router);
+	app.use('/api/job-seeker', router);
 };

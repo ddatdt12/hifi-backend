@@ -18,7 +18,7 @@ const login = catchAsync(async (req, res, next) => {
 	company = await Company.populate(company, { path: 'industries' });
 	res.status(200).json({
 		message: 'Login sucessfully',
-		company,
+		data: company,
 		accessToken: company.generateToken(),
 	});
 });

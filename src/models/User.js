@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
 	{
-		_id: {
+		uid: {
 			type: String,
 		},
 		signInProvider: {
@@ -13,10 +13,7 @@ const UserSchema = new Schema(
 			type: String,
 			required: true,
 		},
-		password: {
-			type: String,
-		},
-		displayName: {
+		name: {
 			type: String,
 			required: [true, 'Vui lòng nhập tên'],
 			maxlength: 80,

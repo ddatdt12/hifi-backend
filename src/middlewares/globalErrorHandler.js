@@ -1,8 +1,8 @@
 const AppError = require('../utils/AppError');
 
-const globalErrorHandler = (err, req, res, next) => {
+const globalErrorHandler = (err, req, res) => {
 	//Log to console for dev
-	console.log(err.message);
+	console.log('globalErrorHandler: ', err.message);
 	let error = Object.create(err);
 
 	//Mongoose bad ObjectId
@@ -27,9 +27,9 @@ const globalErrorHandler = (err, req, res, next) => {
 		error = new AppError(message, 400);
 	}
 
-	console.log(error);
+	console.log('Full Error: ', error);
 	res.status(error.statusCode || 500).json({
-		success: false,
+		statusCode: error.statusCode || 500,
 		message: error.message || 'Server error',
 	});
 };
