@@ -5,6 +5,7 @@ const connectDB = () => {
 		.connect(db.url, {
 			useNewUrlParser: true,
 			useUnifiedTopology: true,
+			ignoreUndefined: true,
 		})
 		.then(() => {
 			console.log('Connected to the database!');
