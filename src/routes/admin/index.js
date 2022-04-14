@@ -5,10 +5,18 @@ const userRoute = require('./user');
 const categoryRoute = require('./category');
 const subcategoryRoute = require('./subcategory');
 const skillRoute = require('./skill');
+const companyRoute = require('./company');
 
-router.use('/users', userRoute);
-router.use('/categories', categoryRoute);
-router.use('/subcategories', subcategoryRoute);
-router.use('/skills', skillRoute);
+module.exports = (app) => {
+	router.use('/users', userRoute);
 
-module.exports = router;
+	router.use('/categories', categoryRoute);
+
+	router.use('/subcategories', subcategoryRoute);
+
+	router.use('/skills', skillRoute);
+
+	router.use('/companies', companyRoute);
+
+	app.use('/api/admin', router);
+};

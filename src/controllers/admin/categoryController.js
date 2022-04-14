@@ -1,4 +1,4 @@
-const Category = require('../../models/Category');
+const { Category, SubCategory } = require('../../models');
 const catchAsync = require('../../utils/catchAsync');
 
 const getAllCategories = catchAsync(async (req, res, next) => {
