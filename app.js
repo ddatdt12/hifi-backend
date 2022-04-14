@@ -5,17 +5,12 @@ const morgan = require('morgan');
 const app = express();
 const fs = require('fs');
 const path = require('path');
+const corsOptions = require('./src/configs/cors.config');
 
 const globalErrorHandler = require('./src/middlewares/globalErrorHandler');
 const AppError = require('./src/utils/AppError');
 
 const routesDirName = `${__dirname}/src/routes/`;
-
-//Config
-var corsOptions = {
-	origin: true,
-	credentials: true,
-};
 
 app.use(cors(corsOptions));
 
@@ -33,7 +28,7 @@ fs.readdirSync(routesDirName)
 	});
 
 app.get('/', (req, res) => {
-	res.send('HELLO HiFi');
+	res.send('Heloo HiFi');
 });
 
 app.all('*', (req, res, next) => {
