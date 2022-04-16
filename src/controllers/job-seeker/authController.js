@@ -7,16 +7,22 @@ const AppError = require('../../utils/AppError');
 //@route        POST /api/auth/login
 //@access       PUBLIC
 const login = catchAsync(async (req, res, next) => {
-	const user = await User.findOne({ uid: req.body.uid });
+	const { uid, signInProvider = 'password' } = req.body;
+	let user = await User.findOne({ uid });
 
-	typeof next === 'function' && console.log('Function');
-	if (user) {
-		return next(new Error('User was not found'));
+	if (!user) {
+		if (signInProvider === 'password') {
+			return next(new AppError('User was not found', 404));
+		}
+
+		user = await User.create({
+			...req.body,
+		});
 	}
 	createSendToken(user, 200, res);
 });
 
-const signUp = catchAsync(async (req, res) => {
+const register = catchAsync(async (req, res) => {
 	const { uid, signInProvider, email, name, photoUrl } = req.body;
 
 	console.log(req.body);
@@ -31,9 +37,23 @@ const signUp = catchAsync(async (req, res) => {
 	createSendToken(newUser, 200, res);
 });
 
+const setJWTCookie = (res, cookies = 'over', expires = 5 * 1000) => {
+	res.cookie('accessToken', cookies, {
+		expires: new Date(Date.now() + expires),
+		secure: false,
+		samesite: 'none',
+		// secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+	});
+};
+
 const createSendToken = (user, statusCode, res) => {
 	const accessToken = signToken(user._id);
 
+	setJWTCookie(
+		res,
+		accessToken,
+		process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+	);
 	res.status(statusCode).json({
 		accessToken,
 		data: user,
@@ -46,4 +66,4 @@ const signToken = (id) => {
 	});
 };
 
-module.exports = { login, signUp };
+module.exports = { login, register };

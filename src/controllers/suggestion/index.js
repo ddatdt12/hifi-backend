@@ -24,7 +24,7 @@ const getAllCategory = catchAsync(async (req, res, next) => {
 	const categories = await Category.find({}).populate('subcategories').lean();
 	res.status(200).json({
 		message: 'Get all categories',
-		categories,
+		data: categories,
 	});
 });
 module.exports = { getSkills, getAllCategory };

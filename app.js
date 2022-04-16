@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const app = express();
 const fs = require('fs');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const globalErrorHandler = require('./src/middlewares/globalErrorHandler');
 const AppError = require('./src/utils/AppError');
 const routesDirName = `${__dirname}/src/routes/`;
@@ -17,25 +18,25 @@ app.use(
 	})
 );
 app.use(express.json());
-
+app.use(cookieParser());
 if (process.env.NODE_ENV !== 'production') {
 	app.use(morgan('dev'));
 }
 
 app.get('/', (req, res, next) => {
 	// res.send('HELLO HiFi');
-	next(new Error('Coool'));
+	return next(new AppError('Coool', 404));
 });
 // Require all routes
-// fs.readdirSync(routesDirName)
-// 	.filter((file) => fs.statSync(path.join(routesDirName, file)).isDirectory()) // filter only folder
-// 	.map((folder) => {
-// 		require(path.join(routesDirName, folder))(app);
-// 	});
+fs.readdirSync(routesDirName)
+	.filter((file) => fs.statSync(path.join(routesDirName, file)).isDirectory()) // filter only folder
+	.map((folder) => {
+		require(path.join(routesDirName, folder))(app);
+	});
 
 app.all('*', (req, res, next) => {
 	const error = new AppError(
-		`Can't find ${req.originalUrl} on this server`,
+		`Can't find ${req.method} ${req.originalUrl} on this server`,
 		404
 	);
 	next(error);

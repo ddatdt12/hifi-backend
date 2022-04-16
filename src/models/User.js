@@ -13,6 +13,10 @@ const UserSchema = new Schema(
 			type: String,
 			required: true,
 		},
+		isVerified: {
+			type: Boolean,
+			default: false,
+		},
 		name: {
 			type: String,
 			required: [true, 'Vui lòng nhập tên'],
@@ -21,10 +25,37 @@ const UserSchema = new Schema(
 		photoUrl: {
 			type: String,
 		},
+		phoneNumber: String,
+		location: {
+			city: String,
+			country: String,
+		},
+		age: Number,
+		gender: {
+			type: String,
+			enum: ['Male', 'Female'],
+		},
+		nationality: String,
+		about: String,
+		skills: [{ type: mongoose.Types.ObjectId }],
+		resume: {
+			fileName: String,
+			url: String,
+		},
+		socialNetwork: {
+			facebook: String,
+			linkedIn: String,
+			github: String,
+			twitter: String,
+		},
 	},
 	{
 		timestamps: true,
 	}
 );
-
+UserSchema.virtual('preferences', {
+	ref: 'JobInterest',
+	localField: '_id',
+	foreignField: 'category',
+});
 module.exports = mongoose.model('User', UserSchema);

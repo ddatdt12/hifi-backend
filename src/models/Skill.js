@@ -7,8 +7,6 @@ const SkillSchema = new Schema({
 		required: [true, 'Vui lòng nhập tên skill'],
 	},
 });
-SkillSchema.index({ text: 'text' });
-
 SkillSchema.statics.search = function (q, selected) {
 	return this.find({
 		$and: [
