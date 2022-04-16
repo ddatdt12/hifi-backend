@@ -12,6 +12,12 @@ const SubcategorySchema = new Schema({
 		ref: 'Category',
 		required: [true, 'Subcategory must belong to a category'],
 	},
+	companies: [
+		{
+			type: mongoose.Types.ObjectId,
+			ref: 'Company',
+		},
+	],
 });
 
 module.exports = mongoose.model('Subcategory', SubcategorySchema);

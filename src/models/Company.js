@@ -42,7 +42,7 @@ const CompanySchema = new Schema(
 		summary: String,
 		accountStatus: {
 			type: String,
-			enum: ['pending', 'rejected', 'fullfilled'],
+			enum: ['pending', 'rejected', 'fullfilled', 'deleted'],
 			default: 'pending',
 		},
 	},
@@ -57,6 +57,7 @@ CompanySchema.pre('save', async function (next) {
 	this.password = await bcrypt.hash(this.password, 12);
 	next();
 });
+
 CompanySchema.methods.comparePassword = async function (password) {
 	const isMatch = await bcrypt.compare(password, this.password);
 	this.password = undefined;
@@ -68,4 +69,5 @@ CompanySchema.methods.generateToken = function () {
 		expiresIn: process.env.JWT_EXPIRES_IN,
 	});
 };
+
 module.exports = mongoose.model('Company', CompanySchema);
