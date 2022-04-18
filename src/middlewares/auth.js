@@ -66,9 +66,6 @@ const protectJobSeeker = catchAsync(async (req, res, next) => {
 		console.log('Mic check: ', req.cookies);
 		accessToken = req.cookies.accessToken;
 	}
-
-	console.log('Req: ', req.cookies);
-
 	console.log('Access token: ', accessToken);
 	if (!accessToken) {
 		return next(

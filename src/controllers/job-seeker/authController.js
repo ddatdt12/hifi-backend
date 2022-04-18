@@ -3,6 +3,15 @@ const jwt = require('jsonwebtoken');
 const catchAsync = require('../../utils/catchAsync');
 const User = require('../../models/User');
 const AppError = require('../../utils/AppError');
+//@desc
+//@route        GET /api/auth
+//@access       PUBLIC
+const authenicate = catchAsync(async (req, res, next) => {
+	res.status(200).json({
+		data: req.user,
+	});
+});
+
 //@desc         FOR TESTING: Login = uid
 //@route        POST /api/auth/login
 //@access       PUBLIC
@@ -66,4 +75,4 @@ const signToken = (id) => {
 	});
 };
 
-module.exports = { login, register };
+module.exports = { login, register, authenicate };
