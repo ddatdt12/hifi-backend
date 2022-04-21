@@ -4,9 +4,10 @@ const fs = require('fs');
 const path = require('path');
 const basename = path.basename(__filename);
 
-const db = {};
-db.mongoose = mongoose;
-db.url = dbConfig.url;
+const db = {
+	mongoose: mongoose,
+	url: dbConfig.url,
+};
 
 fs.readdirSync(__dirname)
 	.filter((file) => {
