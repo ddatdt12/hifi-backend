@@ -27,8 +27,10 @@ fs.readdirSync(routesDirName)
 		require(path.join(routesDirName, folder))(app);
 	});
 
-app.get('/', (req, res) => {
-	res.send('Heloo HiFi');
+app.get('/', (req, res, next) => {
+	// res.send('HELLO HiFi');
+	const error = new AppError(`Error on this server`, 404);
+	return next(error);
 });
 
 app.all('*', (req, res, next) => {

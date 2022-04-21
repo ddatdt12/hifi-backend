@@ -15,6 +15,7 @@ const CategorySchema = new Schema(
 		toObject: { virtuals: true },
 	}
 );
+
 CategorySchema.virtual('subcategories', {
 	ref: 'Subcategory',
 	localField: '_id',
