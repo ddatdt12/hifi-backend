@@ -1,29 +1,52 @@
 const catchAsync = require('../../utils/catchAsync');
-const Post = require('../../models/Post');
+const { Post, Company, Category } = require('../../models');
+const APIFeatures = require('../../utils/APIFeatures');
 
 //@desc         get all post
 //@route        GET /api/admin/posts
 //@access       PRIVATE
 const getAllPost = catchAsync(async (req, res, next) => {
-	const posts = await Post.find({}).lean();
+	var features = new APIFeatures(
+		Post.find({
+			verficationStatus: { $in: ['pending', 'fulfilled'] },
+			'company.$name': 'Fullstack  VD',
+		})
+			.populate({ path: 'jobCategories', populate: { path: 'category' } })
+			.populate({
+				path: 'company',
+				select: '_id name',
+			})
+			.lean(),
+		req.query
+	)
+		.paginating()
+		.searching()
+		.sorting()
+		.filtering();
+
+	const result = await Promise.allSettled([
+		features.query,
+		Post.countDocuments(),
+	]);
+	const posts = result[0].status === 'fulfilled' ? result[0].value : [];
+	const count = result[1].status === 'fulfilled' ? result[1].value : 0;
 	res.status(200).json({
 		message: 'Get all posts',
-		posts,
+		data: posts,
+		count,
 	});
 });
 
-//@desc         approve post
+//@desc         approve/reject post
 //@route        PATCH /api/admin/posts/:id
 //@access       PRIVATE
 const approvePost = catchAsync(async (req, res, next) => {
 	const { id } = req.params;
-	console.log(req.body);
 	const { isApproved } = req.body;
 	const posts = await Post.findByIdAndUpdate(
 		id,
 		{
-			verficationStatus: 'pending',
-			// verficationStatus: isApproved ? 'fulfilled' : 'rejected',
+			verficationStatus: isApproved ? 'fulfilled' : 'rejected',
 		},
 		{ new: true, runValidators: true }
 	);
@@ -48,34 +71,66 @@ const getPostById = catchAsync(async (req, res, next) => {
 	});
 });
 
-//@desc         get post pending
-//@route        GET /api/admin/posts/pending
+//@desc         delete post
+//@route        DELETE /api/admin/posts/:id
 //@access       PRIVATE
-const getPostsPending = catchAsync(async (req, res, next) => {
-	const posts = await Post.find({ verficationStatus: 'pending' })
-		.populate({ path: 'jobCategories', populate: { path: 'category' } })
-		.lean();
+const deletePost = catchAsync(async (req, res, next) => {
+	const { id } = req.params;
+	const result = await Post.findByIdAndUpdate(
+		id,
+		{
+			verficationStatus: 'deleted',
+		},
+		{ new: true, runValidators: true }
+	);
 	res.status(200).json({
-		message: 'Get posts pending',
-		data: posts,
+		message: 'Delete posts',
+		data: result,
 	});
 });
 
-//@desc         get post approved
-//@route        GET /api/admin/posts/approved
+//@desc         get option filter (company, catelogy)
+//@route        DELETE /api/admin/posts/:id
 //@access       PRIVATE
-const getPostsApproved = catchAsync(async (req, res, next) => {
-	const posts = await Post.find({ verficationStatus: 'fulfilled' }).lean();
+const getFilterOption = catchAsync(async (req, res, next) => {
+	//company option
+	const companies = await Company.find({}, { name: 1 });
+	const companyOption = new Set();
+	companies.forEach((element) => {
+		companyOption.add(element.name);
+	});
+
+	//catelogy option
+	const categories = await Category.find({}, { name: 1 });
+	const categoryOption = new Set();
+	categories.forEach((element) => {
+		categoryOption.add(element.name);
+	});
+
 	res.status(200).json({
-		message: 'Get posts approved',
-		data: posts,
+		message: '',
+		data: {
+			companyOption: Array.from(companyOption),
+			categoryOption: Array.from(categoryOption),
+		},
 	});
 });
+
+//@desc        	search by title, company name
+//@route        GET /api/admin/posts/approved
+//@access       PRIVATE
+// const search = catchAsync(async (req, res, next) => {
+// 	const posts = await Post.find({ verficationStatus: 'fulfilled' }).lean();
+// 	res.status(200).json({
+// 		message: 'Search by title or company name',
+// 		data: posts,
+// 	});
+// });
 
 module.exports = {
 	getAllPost,
 	approvePost,
 	getPostById,
-	getPostsApproved,
-	getPostsPending,
+	deletePost,
+	getFilterOption,
 };

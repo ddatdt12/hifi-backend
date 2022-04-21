@@ -6,9 +6,13 @@ const categoryRoute = require('./category');
 const skillRoute = require('./skill');
 const postRoute = require('./post');
 
-router.use('/users', userRoute);
-router.use('/categories', categoryRoute);
-router.use('/skills', skillRoute);
-router.use('/posts', postRoute);
+module.exports = (app) => {
+	router.use('/users', userRoute);
 
-module.exports = router;
+	router.use('/categories', categoryRoute);
+
+	router.use('/skills', skillRoute);
+	router.use('/posts', postRoute);
+
+	app.use('/api/admin', router);
+};
