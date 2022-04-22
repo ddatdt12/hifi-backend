@@ -5,6 +5,7 @@ const userRoute = require('./user');
 const categoryRoute = require('./category');
 const subcategoryRoute = require('./subcategory');
 const skillRoute = require('./skill');
+const postRoute = require('./post');
 const companyRoute = require('./company');
 
 module.exports = (app) => {
@@ -15,6 +16,7 @@ module.exports = (app) => {
 	router.use('/subcategories', subcategoryRoute);
 
 	router.use('/skills', skillRoute);
+	router.use('/posts', postRoute);
 
 	router.use('/companies', companyRoute);
 

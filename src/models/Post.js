@@ -31,12 +31,12 @@ const PostSchema = new Schema(
 		postPhoto: String,
 		verficationStatus: {
 			type: String,
-			enum: ['fulfilled', 'pending', 'rejected'],
+			enum: ['fulfilled', 'pending', 'rejected', 'deleted'],
 			default: 'pending',
 		},
-		employer: {
+		company: {
 			type: mongoose.Types.ObjectId,
-			ref: 'User',
+			ref: 'Company',
 		},
 	},
 	{
@@ -44,4 +44,9 @@ const PostSchema = new Schema(
 	}
 );
 
-module.exports = mongoose.model('Post', PostSchema);
+PostSchema.index({ title: 'text' });
+
+const Post = mongoose.model('Post', PostSchema);
+Post.createIndexes({ title: 'text' });
+
+module.exports = Post;

@@ -8,6 +8,7 @@ module.exports = {
 	companyController: require('./companyController'),
 	categoryController: require('./categoryController'),
 	skillController: require('./skillController'),
+	postController: require('./postController'),
 	subcategoryController: require('./subcategoryController'),
 	userController: require('./userController'),
 };
