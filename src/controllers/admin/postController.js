@@ -8,8 +8,7 @@ const APIFeatures = require('../../utils/APIFeatures');
 const getAllPost = catchAsync(async (req, res, next) => {
 	var features = new APIFeatures(
 		Post.find({
-			verficationStatus: { $in: ['pending', 'fulfilled'] },
-			'company.$name': 'Fullstack  VD',
+			verficationStatus: { $in: ['pending', 'fulfilled', 'rejected'] },
 		})
 			.populate({ path: 'jobCategories', populate: { path: 'category' } })
 			.populate({
@@ -22,18 +21,13 @@ const getAllPost = catchAsync(async (req, res, next) => {
 		.paginating()
 		.searching()
 		.sorting()
-		.filtering();
+		.filtering(['company']);
 
-	const result = await Promise.allSettled([
-		features.query,
-		Post.countDocuments(),
-	]);
-	const posts = result[0].status === 'fulfilled' ? result[0].value : [];
-	const count = result[1].status === 'fulfilled' ? result[1].value : 0;
+	const posts = await features.query;
+
 	res.status(200).json({
 		message: 'Get all posts',
 		data: posts,
-		count,
 	});
 });
 
@@ -90,28 +84,19 @@ const deletePost = catchAsync(async (req, res, next) => {
 });
 
 //@desc         get option filter (company, catelogy)
-//@route        DELETE /api/admin/posts/:id
+//@route        GET /api/admin/posts/filter-option
 //@access       PRIVATE
 const getFilterOption = catchAsync(async (req, res, next) => {
 	//company option
-	const companies = await Company.find({}, { name: 1 });
-	const companyOption = new Set();
-	companies.forEach((element) => {
-		companyOption.add(element.name);
-	});
-
+	const companies = await Company.find({}, { name: 1, _id: 1 });
 	//catelogy option
 	const categories = await Category.find({}, { name: 1 });
-	const categoryOption = new Set();
-	categories.forEach((element) => {
-		categoryOption.add(element.name);
-	});
 
 	res.status(200).json({
 		message: '',
 		data: {
-			companyOption: Array.from(companyOption),
-			categoryOption: Array.from(categoryOption),
+			companyOption: Array.from(companies),
+			categoryOption: Array.from(categories),
 		},
 	});
 });

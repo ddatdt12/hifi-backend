@@ -28,11 +28,22 @@ function APIFeatures(query, queryString) {
 		return this;
 	};
 
-	this.filtering = () => {
-		const queryObj = { ...this.queryString };
+	this.filtering = (arrKey = []) => {
+		var queryObj = { ...this.queryString };
+
+		//convert to array, ex: company: 123,abc => company: ['123', 'abc']
+		arrKey.forEach((e) => {
+			const tmp = queryObj[e]?.split(',');
+			if (tmp) {
+				queryObj = {
+					...queryObj,
+					[e]: tmp,
+				};
+			}
+		});
+
 		const excludedFields = ['page', 'sort', 'search', 'limit'];
 		excludedFields.forEach((el) => delete queryObj[el]);
-
 		let queryStr = JSON.stringify(queryObj);
 		queryStr = queryStr.replace(
 			/\b(gte|gt|lt|lte|regex)\b/g,
