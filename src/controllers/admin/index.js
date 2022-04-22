@@ -5,5 +5,9 @@ const basename = path.basename(__filename);
 var controllers = getAllController(__dirname, basename);
 
 module.exports = {
-	...controllers,
+	companyController: require('./companyController'),
+	categoryController: require('./categoryController'),
+	skillController: require('./skillController'),
+	subcategoryController: require('./subcategoryController'),
+	userController: require('./userController'),
 };

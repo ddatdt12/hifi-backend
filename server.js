@@ -1,5 +1,6 @@
 const app = require('./app');
 const connectDB = require('./database');
+const ConnectSocket = require('./src/socket');
 const port = process.env.PORT || 5000;
 
 connectDB();
@@ -7,6 +8,8 @@ connectDB();
 const server = app.listen(port, () => {
 	console.log(`App running on port ${port}...`);
 });
+
+ConnectSocket(server);
 
 process.on('uncaughtException', (err) => {
 	console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
