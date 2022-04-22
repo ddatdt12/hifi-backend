@@ -5,16 +5,20 @@ const morgan = require('morgan');
 const app = express();
 const fs = require('fs');
 const path = require('path');
-const bodyParser = require('body-parser');
+const corsOptions = require('./src/configs/cors.config');
 
 const globalErrorHandler = require('./src/middlewares/globalErrorHandler');
 const AppError = require('./src/utils/AppError');
 
 const routesDirName = `${__dirname}/src/routes/`;
 
-app.use(bodyParser.json());
+app.use(cors(corsOptions));
 
-app.use(cors());
+app.use(express.json());
+
+if (process.env.NODE_ENV !== 'production') {
+	app.use(morgan('dev'));
+}
 
 // Require all routes
 fs.readdirSync(routesDirName)
@@ -23,14 +27,10 @@ fs.readdirSync(routesDirName)
 		require(path.join(routesDirName, folder))(app);
 	});
 
-app.use(express.json());
-
-if (process.env.NODE_ENV !== 'production') {
-	app.use(morgan('dev'));
-}
-
-app.get('/', (req, res) => {
-	res.send('HELLO HiFi');
+app.get('/', (req, res, next) => {
+	// res.send('HELLO HiFi');
+	const error = new AppError(`Error on this server`, 404);
+	return next(error);
 });
 
 app.all('*', (req, res, next) => {

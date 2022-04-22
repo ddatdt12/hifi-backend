@@ -8,13 +8,14 @@ const CategorySchema = new Schema(
 			required: [true, 'Vui lòng nhập tên category'],
 			unique: true,
 		},
-		icon: String,
+		imageUrl: String,
 	},
 	{
 		toJSON: { virtuals: true },
 		toObject: { virtuals: true },
 	}
 );
+
 CategorySchema.virtual('subcategories', {
 	ref: 'Subcategory',
 	localField: '_id',

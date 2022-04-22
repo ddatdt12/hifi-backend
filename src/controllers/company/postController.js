@@ -1,4 +1,3 @@
-const AppError = require('../../utils/AppError');
 const catchAsync = require('../../utils/catchAsync');
 const Post = require('../../models/Post');
 //@desc         get all posts
