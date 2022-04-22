@@ -9,7 +9,7 @@ const catchAsync = require('../utils/catchAsync');
 const login = catchAsync(async (req, res, next) => {
 	return next(new AppError('Login Error', 404));
 
-	createSendToken({ _id: 'test' }, 200, res);
+	// createSendToken({ _id: 'test' }, 200, res);
 });
 
 const createSendToken = (user, statusCode, res) => {

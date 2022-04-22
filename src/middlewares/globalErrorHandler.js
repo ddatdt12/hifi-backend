@@ -2,6 +2,7 @@ const AppError = require('../utils/AppError');
 
 const globalErrorHandler = (err, req, res, next) => {
 	//Log to console for dev
+	console.log(1);
 	console.log(err.message);
 	let error = Object.create(err);
 

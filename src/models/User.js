@@ -19,6 +19,12 @@ const UserSchema = new Schema(
 			required: [true, 'Vui lòng nhập tên'],
 			maxlength: 30,
 		},
+		rooms: [
+			{
+				type: mongoose.Types.ObjectId,
+				ref: 'Room',
+			},
+		],
 	},
 	{
 		timestamps: true,
