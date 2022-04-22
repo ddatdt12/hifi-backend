@@ -1,13 +1,13 @@
 const express = require('express');
 
 const router = express.Router();
-const { subCategoryController } = require('../../controllers/admin');
+const { subcategoryController } = require('../../controllers/admin');
 
 router
 	.route('/:id')
-	.get(subCategoryController.getAllSubcategories)
-	.post(subCategoryController.batchCreateSubcategories)
-	.patch(subCategoryController.updateSubcategory)
-	.delete(subCategoryController.deleteSubcategory);
+	.get(subcategoryController.getAllSubcategories)
+	.post(subcategoryController.batchCreateSubcategories)
+	.patch(subcategoryController.updateSubcategory)
+	.delete(subcategoryController.deleteSubcategory);
 
 module.exports = router;
