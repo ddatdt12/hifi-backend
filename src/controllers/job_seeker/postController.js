@@ -8,12 +8,14 @@ const APIFeatures = require('../../utils/APIFeatures');
 const getAllPost = catchAsync(async (req, res, next) => {
 	var features = new APIFeatures(
 		Post.find({
-			verficationStatus: 'fulfilled',
+			// verficationStatus: 'fulfilled',
 		})
 			.populate({
 				path: 'skillTags',
 				select: '_id text',
 			})
+			.populate('company')
+			.populate('salary')
 			.lean(),
 		req.query
 	)
@@ -40,6 +42,8 @@ const getPostById = catchAsync(async (req, res, next) => {
 			path: 'skillTags',
 			select: '_id text',
 		})
+		.populate('company')
+		.populate('salary')
 		.lean();
 	res.status(200).json({
 		message: 'Get post by id',
