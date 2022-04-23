@@ -14,16 +14,11 @@ const JobInterest = new Schema(
 			},
 		],
 		preference: {
-			type: {
-				fullTime: Boolean,
-				internship: Boolean,
-				partTime: Boolean,
-				freelance: Boolean,
-			},
+			typesOfOpportunity: [String],
 			currencyCode: String,
 			workLocation: String,
 			salaryExpectation: Number,
-			willingToWorkRemotely: Boolean,
+			willingToWorkRemotely: { type: Boolean, default: false },
 		},
 	},
 	{

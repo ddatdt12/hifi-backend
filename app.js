@@ -16,7 +16,12 @@ var corsOptions = {
 	credentials: true,
 };
 
-app.use(cors(corsOptions));
+app.use(
+	cors({
+		origin: true,
+		credentials: true,
+	})
+);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -34,9 +39,10 @@ fs.readdirSync(routesDirName)
 app.get('/', (req, res) => {
 	res.send('HELLO HiFi');
 });
+
 // Require all routes
 fs.readdirSync(routesDirName)
-	.filter((file) => fs.statSync(path.join(routesDirName, file)).isDirectory()) // filter only folder
+	// .filter((file) => fs.statSync(path.join(routesDirName, file)).isDirectory()) // filter only folder
 	.map((folder) => {
 		require(path.join(routesDirName, folder))(app);
 	});

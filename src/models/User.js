@@ -22,22 +22,22 @@ const UserSchema = new Schema(
 			required: [true, 'Vui lòng nhập tên'],
 			maxlength: 80,
 		},
+		birthDate: {
+			type: Date,
+		},
 		photoUrl: {
 			type: String,
 		},
 		phoneNumber: String,
-		location: {
-			city: String,
-			country: String,
-		},
+		address: String,
 		age: Number,
 		gender: {
 			type: String,
-			enum: ['Male', 'Female'],
+			enum: ['MALE', 'FEMALE'],
 		},
 		nationality: String,
 		about: String,
-		skills: [{ type: mongoose.Types.ObjectId }],
+		skills: [{ type: mongoose.Types.ObjectId, ref: 'Skill' }],
 		resume: {
 			fileName: String,
 			url: String,
@@ -48,14 +48,18 @@ const UserSchema = new Schema(
 			github: String,
 			twitter: String,
 		},
+		candidateStatus: {
+			type: String,
+			enum: [
+				'I_AM_LOOKING_FOR_JOB',
+				'OPEN_FOR_OPPORTUNITIES',
+				'I_AM_NOT_INTERESTED_IN_JOB',
+			],
+		},
 	},
 	{
 		timestamps: true,
 	}
 );
-UserSchema.virtual('preferences', {
-	ref: 'JobInterest',
-	localField: '_id',
-	foreignField: 'category',
-});
+
 module.exports = mongoose.model('User', UserSchema);

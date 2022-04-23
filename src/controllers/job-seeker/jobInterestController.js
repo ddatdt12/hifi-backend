@@ -6,7 +6,7 @@ const AppError = require('../../utils/AppError');
 //@route        POST /api/user/me
 //@access       PUBLIC
 const getJobInterests = catchAsync(async (req, res) => {
-	const education = await JobInterest.find({ userId: req.user._id });
+	const education = await JobInterest.findOne({ userId: req.user._id });
 	res.status(200).json({
 		message: 'Get educations successfully',
 		data: education,
@@ -28,10 +28,10 @@ const updatejobInterest = catchAsync(async (req, res, next) => {
 
 	const jobInterest = await JobInterest.findById(id);
 	if (
-		!jobInterest ||
+		jobInterest &&
 		jobInterest.userId.toString() !== req.user._id.toString()
 	) {
-		return next(new AppError('No jobInterest fou	nd with that id', 404));
+		return next(new AppError('No job interest fou	nd with that id', 404));
 	}
 
 	const updatedJobInterest = await JobInterest.findByIdAndUpdate(

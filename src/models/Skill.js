@@ -7,8 +7,8 @@ const SkillSchema = new Schema({
 		required: [true, 'Vui lòng nhập tên skill'],
 	},
 });
-SkillSchema.statics.search = function (q, selected) {
-	return this.find({
+SkillSchema.statics.search = function (q, selected, limit) {
+	let query = this.find({
 		$and: [
 			{
 				_id: { $nin: selected },
@@ -16,6 +16,10 @@ SkillSchema.statics.search = function (q, selected) {
 			{ text: new RegExp(q, 'gi') },
 		],
 	});
+	if (limit) {
+		query.limit(limit);
+	}
+	return query;
 };
 
 module.exports = mongoose.model('Skill', SkillSchema);
