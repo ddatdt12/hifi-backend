@@ -9,6 +9,9 @@ module.exports = (app) => {
 	router.get('/users', suggestionController.getAllUser);
 	router.get('/rooms/:userId', suggestionController.getRoomsByUserId);
 	router.get('/rooms', suggestionController.getAllRooms);
+	router.get('/universities', suggestionController.getUniversities);
+	router.get('/majors', suggestionController.getMajors);
+	router.get('/degrees', suggestionController.getDegrees);
 
 	app.use('/api/suggestion', router);
 };
