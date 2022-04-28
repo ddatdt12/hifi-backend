@@ -4,7 +4,8 @@ const router = express.Router();
 
 const { postController } = require('../../controllers/job-seeker');
 
-router.route('/').get(postController.getAllPosts);
-router.route('/:id').get(postController.getPostDetail);
+router.route('/').get(postController.getAllPost);
+router.route('/filter-option').get(postController.getFilterOption);
+router.route('/:id').get(postController.getPostById);
 
 module.exports = router;

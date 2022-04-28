@@ -4,9 +4,10 @@ const Category = require('../../models/Category');
 const User = require('../../models/User');
 const Utils = require('../../utils');
 const Room = require('../../models/Room');
+
 const universities = require('../../data/universities.json').data;
 const degrees = require('../../data/degrees.json').data;
-const majors = require('../../data/majors.json').majors;
+const majors = require('../../data/majors.json').data;
 
 const getSkills = catchAsync(async (req, res) => {
 	const { q, selected, limit } = req.query;
@@ -84,10 +85,8 @@ module.exports = {
 	getAllCategory,
 	getAllUser,
 	getRoomsByUserId,
-	getAllRooms,
-	getSkills,
-	getAllCategory,
 	getUniversities,
 	getDegrees,
 	getMajors,
+	getAllRooms,
 };

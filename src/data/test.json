@@ -1,0 +1,63 @@
+{
+  "links": {},
+  "data": [
+    {
+      "id": "02a5e860-42d4-482a-b73b-c7e49f3ca8eb",
+      "name": "Bachelor of Engineering Product Development",
+      "createdAt": "2016-10-05T14:57:02.806Z",
+      "updatedAt": "2016-10-05T14:57:02.806Z",
+      "links": {}
+    },
+    {
+      "id": "797e7f09-5553-498c-979c-d045c01c7651",
+      "name": "Diploma in Aerospace/Electrical/Electronic Programme ",
+      "createdAt": "2016-10-05T14:57:02.806Z",
+      "updatedAt": "2016-10-05T14:57:02.806Z",
+      "links": {}
+    },
+    {
+      "id": "3810a6f1-d77a-4fc5-b055-3f4531477e3e",
+      "name": "Diploma in Aerospace/Mechatronics Programme",
+      "createdAt": "2016-10-05T14:57:02.806Z",
+      "updatedAt": "2016-10-05T14:57:02.806Z",
+      "links": {}
+    },
+    {
+      "id": "ccc29ab1-34f0-43b5-8db9-cb6b55838ef5",
+      "name": "Diploma in Biologics and Process Technology",
+      "createdAt": "2016-10-05T14:57:02.806Z",
+      "updatedAt": "2016-10-05T14:57:02.806Z",
+      "links": {}
+    },
+    {
+      "id": "a9b28c28-bb79-4aca-981f-88ac9799c8ec",
+      "name": "Diploma in Business Enterprise IT",
+      "createdAt": "2016-10-05T14:57:02.806Z",
+      "updatedAt": "2016-10-05T14:57:02.806Z",
+      "links": {}
+    },
+    {
+      "id": "a064795c-ad97-43b3-a672-2a335c235230",
+      "name": "Diploma in Business Process and Systems Engineering",
+      "createdAt": "2016-10-05T14:57:02.806Z",
+      "updatedAt": "2016-10-05T14:57:02.806Z",
+      "links": {}
+    },
+    {
+      "id": "25111873-c214-4a42-819e-825ae4087422",
+      "name": "Diploma in Business and Social Enterprise",
+      "createdAt": "2016-10-05T14:57:02.806Z",
+      "updatedAt": "2016-10-05T14:57:02.806Z",
+      "links": {}
+    },
+    {
+      "id": "1d22d4e2-d633-458c-8e4e-d40d5624a4d7",
+      "name": "Diploma in Common Engineering Programme",
+      "createdAt": "2016-10-05T14:57:02.806Z",
+      "updatedAt": "2016-10-05T14:57:02.806Z",
+      "links": {}
+    }
+  ],
+  "count": 3963,
+  "isAuthenticated": true
+}

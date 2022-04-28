@@ -1,8 +1,8 @@
 const express = require('express');
 
 const router = express.Router();
-const { applicationContronller } = require('../../controllers/admin');
+const { applicationController } = require('../../controllers/admin');
 
-router.route('/').get(applicationContronller.getApplications);
+router.route('/').get(applicationController.getApplications);
 
 module.exports = router;
