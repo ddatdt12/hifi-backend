@@ -8,17 +8,38 @@ const Post = require('../../models/Post');
 //@route        POST /api/user/me
 //@access       PUBLIC
 const getApplications = catchAsync(async (req, res) => {
-	const applications = await Application.find({ userId: req.user._id })
-		.populate('user')
-		.populate('post');
+	const applicationQuery = Application.find({ userId: req.user._id });
+	if (req.query) {
+		applicationQuery.find({ ...req.query });
+	}
+	const applications = await applicationQuery.populate('user').populate({
+		path: 'post',
+		populate: 'company',
+	});
 	res.status(200).json({
 		message: 'Get Application successfully',
 		data: applications,
 	});
 });
+const getApplicationDetail = catchAsync(async (req, res, next) => {
+	const application = await Application.findById(req.params.id)
+		.populate('user')
+		.populate({
+			path: 'post',
+			populate: 'company',
+		});
+	if (!application) {
+		return next(new AppError('No application found with that ID', 404));
+	}
+	res.status(200).json({
+		message: 'Get Application successfully',
+		data: application,
+	});
+});
 const createApplication = catchAsync(async (req, res, next) => {
 	const { postId, resume, phoneNumber, coverLetter } = req.body;
 
+	console.log('body', req.body);
 	const post = await Post.findById(postId);
 
 	if (!post) {
@@ -86,4 +107,5 @@ module.exports = {
 	createApplication,
 	updateApplication,
 	deleteApplication,
+	getApplicationDetail,
 };

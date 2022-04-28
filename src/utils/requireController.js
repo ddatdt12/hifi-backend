@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const getAllController = (dirname, basename) => {
-	var controllers = {};
+	let controllers = {};
 
 	fs.readdirSync(dirname)
 		.filter((file) => {

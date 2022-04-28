@@ -34,9 +34,9 @@ const PostSchema = new Schema(
 			enum: ['fulfilled', 'pending', 'rejected'],
 			default: 'pending',
 		},
-		employer: {
+		company: {
 			type: mongoose.Types.ObjectId,
-			ref: 'User',
+			ref: 'Company',
 		},
 	},
 	{

@@ -38,6 +38,10 @@ const CompanySchema = new Schema(
 		size: {
 			type: String,
 		},
+		logo: {
+			type: String,
+		},
+		images: [String],
 		contactName: String,
 		summary: String,
 		accountStatus: {

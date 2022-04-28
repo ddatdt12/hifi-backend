@@ -13,7 +13,7 @@ const ApplicationSchema = new Schema(
 		},
 		resume: {
 			fileName: { type: String, required: true },
-			fileUrl: { type: String, required: true },
+			url: { type: String, required: true },
 		},
 		phoneNumber: { type: String, required: true },
 		coverLetter: {
@@ -21,7 +21,15 @@ const ApplicationSchema = new Schema(
 		},
 		status: {
 			type: String,
-			enum: ['NEW', 'IN_REVIEW', 'INTERVIEWING', 'REJECTED', 'HIRED'],
+			enum: [
+				'NEW',
+				'IN_REVIEW',
+				'INTERVIEWING',
+				'ASSESSMENT',
+				'OFFERED',
+				'REJECTED',
+				'HIRED',
+			],
 			default: 'NEW',
 		},
 	},

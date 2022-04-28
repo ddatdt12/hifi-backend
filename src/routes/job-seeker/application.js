@@ -11,6 +11,7 @@ router
 
 router
 	.route('/:id')
+	.get(applicationController.getApplicationDetail)
 	.put(applicationController.updateApplication)
 	.delete(applicationController.deleteApplication);
 module.exports = router;
