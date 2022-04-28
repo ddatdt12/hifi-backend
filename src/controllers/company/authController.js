@@ -18,7 +18,7 @@ const login = catchAsync(async (req, res, next) => {
 	company = await Company.populate(company, { path: 'industries' });
 	res.status(200).json({
 		message: 'Login sucessfully',
-		company,
+		data: company,
 		accessToken: company.generateToken(),
 	});
 });
@@ -27,7 +27,7 @@ const login = catchAsync(async (req, res, next) => {
 //@route        GET /api/employer/auth/register
 //@access       PUBLIC
 const register = catchAsync(async (req, res, next) => {
-	const { email, password, confirmPassword } = req.body;
+	const { email, password, confirmPassword, location } = req.body;
 
 	if (password !== confirmPassword) {
 		return next(
@@ -39,6 +39,7 @@ const register = catchAsync(async (req, res, next) => {
 		return next(new AppError('Email is already registered', 404));
 	}
 
+	req.body.locations = [location];
 	const newCompany = await Company.create(req.body);
 	newCompany.password = undefined;
 	res.status(200).json({
@@ -48,4 +49,14 @@ const register = catchAsync(async (req, res, next) => {
 	});
 });
 
-module.exports = { login, register };
+//@desc         employer register
+//@route        GET /api/employer/auth/register
+//@access       PUBLIC
+const verifyAccessToken = catchAsync(async (req, res, next) => {
+	res.status(200).json({
+		message: 'User is logged in',
+		data: req.user,
+	});
+});
+
+module.exports = { login, register, verifyAccessToken };
