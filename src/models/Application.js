@@ -21,15 +21,7 @@ const ApplicationSchema = new Schema(
 		},
 		status: {
 			type: String,
-			enum: [
-				'NEW',
-				'IN_REVIEW',
-				'INTERVIEWING',
-				'ASSESSMENT',
-				'OFFERED',
-				'REJECTED',
-				'HIRED',
-			],
+			enum: ['NEW', 'IN_PROGRESS', 'UNSUITABLE', 'HIRED'],
 			default: 'NEW',
 		},
 	},
