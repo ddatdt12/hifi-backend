@@ -25,7 +25,6 @@ const getAllPost = catchAsync(async (req, res, next) => {
 
 	var posts = await features.query;
 	const category = req.query.category?.split(',');
-	console.log(req.query);
 	if (category) {
 		posts = posts.filter((e) =>
 			category.includes(e.jobCategories[0]?.category._id.toString())
