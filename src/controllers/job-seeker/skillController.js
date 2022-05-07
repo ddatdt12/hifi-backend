@@ -3,7 +3,6 @@ const User = require('../../models/User');
 
 const getSkills = catchAsync(async (req, res) => {
 	const user = await User.findById(req.user._id).populate('skills');
-	console.log('User: ', user);
 	res.status(200).json({
 		message: 'create skills successfully',
 		data: user,

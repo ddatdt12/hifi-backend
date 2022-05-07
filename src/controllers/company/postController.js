@@ -20,7 +20,6 @@ const getAllPost = catchAsync(async (req, res) => {
 const createJobPost = catchAsync(async (req, res) => {
 	const post = await Post.create(req.body);
 
-	console.log(req.body);
 	res.status(200).json({
 		message: 'create new post successfully',
 		post,

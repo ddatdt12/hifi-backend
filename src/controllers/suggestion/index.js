@@ -44,7 +44,6 @@ const getAllUser = catchAsync(async (req, res, next) => {
 
 const getRoomsByUserId = catchAsync(async (req, res, next) => {
 	const { userId } = req.params;
-	console.log(userId);
 	const rooms = await Room.find({ chatters: { $elemMatch: { $eq: userId } } })
 		.populate('chatters')
 		.lean();

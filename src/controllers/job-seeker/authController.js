@@ -34,7 +34,6 @@ const login = catchAsync(async (req, res, next) => {
 const register = catchAsync(async (req, res) => {
 	const { uid, signInProvider, email, name, photoUrl } = req.body;
 
-	console.log(req.body);
 	const newUser = await User.create({
 		uid,
 		signInProvider,
