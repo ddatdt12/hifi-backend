@@ -1,7 +1,6 @@
 const catchAsync = require('../../utils/catchAsync');
 const Application = require('../../models/Application');
 const AppError = require('../../utils/AppError');
-const Company = require('../../models/Company');
 const Post = require('../../models/Post');
 
 //@desc         get me
@@ -39,7 +38,6 @@ const getApplicationDetail = catchAsync(async (req, res, next) => {
 const createApplication = catchAsync(async (req, res, next) => {
 	const { postId, resume, phoneNumber, coverLetter } = req.body;
 
-	console.log('body', req.body);
 	const post = await Post.findById(postId);
 
 	if (!post) {
