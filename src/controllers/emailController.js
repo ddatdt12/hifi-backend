@@ -5,8 +5,8 @@ const { sendVerificationEmail } = require('../services/email');
 const User = require('../models/User');
 
 const userTokenMap = new Map();
-//@desc         FOR TESTING: Login = uid
-//@route        GET /api/auth/login
+//@desc         Send Email Verification
+//@route        POST /api/email/verify-account
 //@access       PUBLIC
 const sendEmailVerification = catchAsync(async (req, res, next) => {
 	const { email } = req.body;
@@ -31,6 +31,10 @@ const sendEmailVerification = catchAsync(async (req, res, next) => {
 		message: 'Email sent successfully',
 	});
 });
+
+//@desc         verify Token from account verification email
+//@route        GET /api/email/verify-account/:accountId/:token'
+//@access       PUBLIC
 const verifyTokenEmail = catchAsync(async (req, res, next) => {
 	const { accountId, token } = req.params;
 	const userToken = userTokenMap.get(accountId);

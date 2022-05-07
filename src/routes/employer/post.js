@@ -9,4 +9,6 @@ router
 	.get(postController.getAllPost)
 	.post(postController.createJobPost);
 
+router.route('/:idCompany').get(postController.getAllPostByCompany);
+
 module.exports = router;
