@@ -7,14 +7,27 @@ const APIFeatures = require('../../utils/APIFeatures');
 //@route        GET /api/admin/posts
 //@access       PRIVATE
 const getAllPost = catchAsync(async (req, res, next) => {
-	var objQuery = {};
+	var objQuery = {
+		verficationStatus: 'fulfilled',
+	};
 
+	//search
 	if (req.query.search) {
 		objQuery = {
+			...objQuery,
 			$text: { $search: req.query.search },
 		};
 	}
+	//filter by category
+	if (req.query.jobCategories) {
+		const arrIdSubCategory = req.query.jobCategories.split(',');
+		objQuery = {
+			...objQuery,
+			jobCategories: { $in: arrIdSubCategory },
+		};
+	}
 
+	//filter by salary
 	if (req.query.salary) {
 		const salary = req.query.salary;
 		if (!salary.negotiable) {
@@ -61,9 +74,12 @@ const getAllPost = catchAsync(async (req, res, next) => {
 	const page = req.query.page || 1;
 	const limit = req.query.limit || 10;
 	const offset = (page - 1) * limit;
-	const tmp = await Post.paginate(objQuery, {
+	const result = await Post.paginate(objQuery, {
 		populate: [
-			'jobCategories',
+			{
+				path: 'jobCategories',
+				select: '_id name',
+			},
 			{ path: 'company', select: '_id name' },
 			{
 				path: 'skillTags',
@@ -76,10 +92,9 @@ const getAllPost = catchAsync(async (req, res, next) => {
 	});
 	res.status(200).json({
 		message: 'Get all posts',
-		// data: posts,
-		totalItems: tmp.totalDocs,
-		data: tmp.docs,
-		totalPages: tmp.totalPages,
+		totalItems: result.totalDocs,
+		data: result.docs,
+		totalPages: result.totalPages,
 	});
 });
 

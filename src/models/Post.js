@@ -6,12 +6,10 @@ const PostSchema = new Schema(
 	{
 		title: String,
 		jobType: String,
-		jobCategories: [
-			{
-				type: mongoose.Schema.ObjectId,
-				ref: 'Subcategory',
-			},
-		],
+		jobCategories: {
+			type: mongoose.Schema.ObjectId,
+			ref: 'Subcategory',
+		},
 		salary: {
 			min: Number,
 			max: Number,
