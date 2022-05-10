@@ -36,7 +36,6 @@ const protectEmployer = catchAsync(async (req, res, next) => {
 		return next(new AppError('Invalid Token', 403));
 	}
 
-	console.log('Decode: ', decoded);
 	// 3) Check if user still exists
 	const currentUser = await Company.findById(decoded.id);
 	if (!currentUser) {
@@ -56,13 +55,13 @@ const protectEmployer = catchAsync(async (req, res, next) => {
 const protectJobSeeker = catchAsync(async (req, res, next) => {
 	// 1) Getting token and check of it's there
 	let accessToken;
+
 	if (
 		req.headers.authorization &&
 		req.headers.authorization.startsWith('Bearer')
 	) {
 		accessToken = req.headers.authorization.split(' ')[1];
 	} else if (req.cookies.accessToken) {
-		console.log('Mic check: ', req.cookies);
 		accessToken = req.cookies.accessToken;
 	}
 	if (!accessToken) {
