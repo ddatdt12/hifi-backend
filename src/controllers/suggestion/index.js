@@ -44,17 +44,18 @@ const getAllUser = catchAsync(async (req, res, next) => {
 
 const getRoomsByUserId = catchAsync(async (req, res, next) => {
 	const { userId } = req.params;
-	const rooms = await Room.find({ chatters: { $elemMatch: { $eq: userId } } })
-		.populate('chatters')
-		.lean();
+	console.log(userId);
+	const rooms = await Room.find({
+		chatters: { $elemMatch: { chatterId: userId } },
+	}).lean();
 	res.status(200).json({
 		message: 'Get all room by user',
 		value: rooms,
 	});
 });
 
-const getAllRooms = catchAsync(async (req, res, next) => {
-	const rooms = await Room.find({}).populate('chatters').lean();
+const getAllRooms = catchAsync(async (req, res) => {
+	const rooms = await Room.find({}).populate().lean();
 	res.status(200).json({
 		message: 'Get all room by user',
 		value: rooms,
@@ -79,6 +80,7 @@ const getMajors = catchAsync(async (req, res, next) => {
 		data: majors.filter((m) => m.isMajor).map((m) => m.name),
 	});
 });
+
 module.exports = {
 	getSkills,
 	getAllCategory,

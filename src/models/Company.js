@@ -49,6 +49,17 @@ const CompanySchema = new Schema(
 			enum: ['pending', 'rejected', 'fullfilled', 'deleted'],
 			default: 'pending',
 		},
+		notifications: [
+			{
+				message: String,
+				createdAt: Date,
+				redirectUrl: String,
+				isRead: {
+					type: Boolean,
+					default: false,
+				},
+			},
+		],
 	},
 	{
 		timestamps: true,

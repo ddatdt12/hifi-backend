@@ -12,4 +12,5 @@ module.exports = {
 	subcategoryController: require('./subcategoryController'),
 	userController: require('./userController'),
 	applicationController: require('./applicationContronller'),
+	authController: require('./authController'),
 };
