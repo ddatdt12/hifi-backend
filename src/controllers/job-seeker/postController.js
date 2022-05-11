@@ -1,32 +1,112 @@
 const catchAsync = require('../../utils/catchAsync');
-const { Post, Company, Category } = require('../../models');
+const { Post, FavoritePost, Subcategory } = require('../../models');
+const ObjectId = require('mongodb').ObjectID;
 const APIFeatures = require('../../utils/APIFeatures');
 
 //@desc         get all post
 //@route        GET /api/admin/posts
 //@access       PRIVATE
 const getAllPost = catchAsync(async (req, res, next) => {
-	var features = new APIFeatures(
-		Post.find({
-			verficationStatus: 'fulfilled',
-		})
-			.populate({
+	var objQuery = {
+		verficationStatus: 'fulfilled',
+	};
+
+	//search
+	if (req.query.search) {
+		objQuery = {
+			...objQuery,
+			$text: { $search: req.query.search },
+		};
+	}
+	//filter by category
+	if (req.query.jobCategories) {
+		const arrIdSubCategory = req.query.jobCategories.split(',');
+		objQuery = {
+			...objQuery,
+			jobCategories: { $in: arrIdSubCategory },
+		};
+	}
+
+	//filter by salary
+	if (req.query.salary) {
+		const salary = req.query.salary;
+		if (!salary.negotiable) {
+			var salaryVND = {
+				'salary.negotiable': false,
+				'salary.unit': 'vnd',
+			};
+			var salaryUSD = {
+				'salary.negotiable': false,
+				'salary.unit': 'usd',
+			};
+
+			if (salary.start) {
+				salaryUSD = {
+					...salaryUSD,
+					'salary.max': { $gte: salary.start / 20000 },
+				};
+				salaryVND = {
+					...salaryVND,
+					'salary.max': { $gte: salary.start },
+				};
+			}
+			if (salary.end) {
+				salaryVND = {
+					...salaryVND,
+					'salary.min': { $lt: salary.end },
+				};
+				salaryUSD = {
+					...salaryUSD,
+					'salary.min': { $lt: salary.end / 20000 },
+				};
+			}
+			objQuery = {
+				...objQuery,
+				$or: [salaryVND, salaryUSD],
+			};
+		} else {
+			objQuery = {
+				...objQuery,
+				'salary.negotiable': true,
+			};
+		}
+	}
+	const page = req.query.page || 1;
+	const limit = req.query.limit || 10;
+	const offset = (page - 1) * limit;
+	const result = await Post.paginate(objQuery, {
+		populate: [
+			{
+				path: 'jobCategories',
+				select: '_id name',
+			},
+			{ path: 'company', select: '_id name' },
+			{
 				path: 'skillTags',
 				select: '_id text',
-			})
-			.lean(),
-		req.query
-	)
-		.paginating()
-		.searching()
-		.sorting()
-		.filtering(['company']);
+			},
+		],
+		sort: 'createdAt',
+		offset,
+		limit,
+		lean: true,
+	});
 
-	const posts = await features.query;
-
+	const data = await Promise.all(
+		result.docs.map(async (e) => {
+			const isExisted =
+				(await FavoritePost.findOne({ post: e._id }).count()) > 0;
+			return {
+				...e,
+				isFavorited: isExisted,
+			};
+		})
+	);
 	res.status(200).json({
 		message: 'Get all posts',
-		data: posts,
+		totalItems: result.totalDocs,
+		data: data,
+		totalPages: result.totalPages,
 	});
 });
 
@@ -35,12 +115,21 @@ const getAllPost = catchAsync(async (req, res, next) => {
 //@access       PRIVATE
 const getPostById = catchAsync(async (req, res, next) => {
 	const { id } = req.params;
-	const post = await Post.findById(id)
+	let post = await Post.findById(id)
 		.populate({
 			path: 'skillTags',
 			select: '_id text',
 		})
+		.populate('jobCategories')
+		.populate('company')
+		.populate('salary')
 		.lean();
+
+	const isExisted = (await FavoritePost.findOne({ post: id }).count()) > 0;
+	post = {
+		...post,
+		isFavorited: isExisted,
+	};
 	res.status(200).json({
 		message: 'Get post by id',
 		data: post,
@@ -51,21 +140,86 @@ const getPostById = catchAsync(async (req, res, next) => {
 //@route        GET /api/admin/posts/filter-option
 //@access       PRIVATE
 const getFilterOption = catchAsync(async (req, res, next) => {
-	//company option
-	const companies = await Company.find({}, { name: 1, _id: 1 });
+	//Level option
 	//catelogy option
-	const categories = await Category.find({}, { name: 1 });
+	const subCategories = await Subcategory.find({}, { name: 1 });
 
 	res.status(200).json({
 		message: '',
 		data: {
-			companyOption: Array.from(companies),
-			categoryOption: Array.from(categories),
+			categoryOption: Array.from(subCategories),
 		},
+	});
+});
+
+const addFavoritePost = catchAsync(async (req, res, next) => {
+	const { userId, postId } = req.body;
+	const favoritePost = {
+		user: userId,
+		post: postId,
+	};
+	const result = await FavoritePost.create(favoritePost);
+
+	res.status(200).json({
+		message: 'Favorited',
+		data: result,
+	});
+});
+
+const deleteFavoritePost = catchAsync(async (req, res, next) => {
+	const { userId, postId } = req.body;
+	const result = await FavoritePost.deleteOne({ user: userId, post: postId });
+	res.status(200).json({
+		message: 'Deleted',
+		data: {
+			status: true,
+		},
+	});
+});
+
+const getFavoritePosts = catchAsync(async (req, res, next) => {
+	const { userId } = req.body;
+	const page = req.query.page || 1;
+	const limit = req.query.limit || 10;
+	const offset = (page - 1) * limit;
+	const result = await FavoritePost.paginate(
+		{ user: userId },
+		{
+			select: 'post',
+			populate: [
+				{
+					path: 'post',
+					populate: [
+						{
+							path: 'jobCategories',
+							select: '_id name',
+						},
+						{ path: 'company', select: '_id name' },
+						{
+							path: 'skillTags',
+							select: '_id text',
+						},
+					],
+				},
+			],
+			sort: 'updatedAt',
+			offset,
+			limit,
+			lean: true,
+		}
+	);
+	res.status(200).json({
+		message: 'Get favorite post',
+		totalItems: result.totalDocs,
+		data: result.docs,
+		totalPages: result.totalPages,
 	});
 });
 module.exports = {
 	getAllPost,
 	getPostById,
 	getFilterOption,
+	addFavoritePost,
+	deleteFavoritePost,
+	getFavoritePosts,
 };

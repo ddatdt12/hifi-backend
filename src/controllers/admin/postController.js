@@ -23,7 +23,13 @@ const getAllPost = catchAsync(async (req, res, next) => {
 		.sorting()
 		.filtering(['company']);
 
-	const posts = await features.query;
+	var posts = await features.query;
+	const category = req.query.category?.split(',');
+	if (category) {
+		posts = posts.filter((e) =>
+			category.includes(e.jobCategories[0]?.category._id.toString())
+		);
+	}
 
 	res.status(200).json({
 		message: 'Get all posts',

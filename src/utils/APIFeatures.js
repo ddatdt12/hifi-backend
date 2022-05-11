@@ -3,7 +3,7 @@ function APIFeatures(query, queryString) {
 	this.queryString = queryString; // req.query
 	this.paginating = () => {
 		const page = this.queryString.page * 1 || 1;
-		const limit = this.queryString.limit * 1 || 10;
+		const limit = this.queryString.limit || 10;
 		const skip = limit * (page - 1);
 
 		this.query = this.query.limit(limit).skip(skip);

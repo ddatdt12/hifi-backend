@@ -1,16 +1,15 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 const Schema = mongoose.Schema;
 
 const PostSchema = new Schema(
 	{
 		title: String,
 		jobType: String,
-		jobCategories: [
-			{
-				type: mongoose.Schema.ObjectId,
-				ref: 'Subcategory',
-			},
-		],
+		jobCategories: {
+			type: mongoose.Schema.ObjectId,
+			ref: 'Subcategory',
+		},
 		salary: {
 			min: Number,
 			max: Number,
@@ -43,6 +42,8 @@ const PostSchema = new Schema(
 		timestamps: true,
 	}
 );
+
+PostSchema.plugin(mongoosePaginate);
 
 PostSchema.index({ title: 'text' });
 
