@@ -1,5 +1,5 @@
+const User = require('../../models/User');
 const AppError = require('../../utils/AppError');
-const { User } = require('../../models');
 const catchAsync = require('../../utils/catchAsync');
 
 //@desc         get user information

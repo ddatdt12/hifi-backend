@@ -62,6 +62,17 @@ const UserSchema = new Schema(
 				ref: 'Room',
 			},
 		],
+		notifications: [
+			{
+				message: String,
+				createdAt: Date,
+				redirectUrl: String,
+				isRead: {
+					type: Boolean,
+					default: false,
+				},
+			},
+		],
 	},
 	{
 		timestamps: true,

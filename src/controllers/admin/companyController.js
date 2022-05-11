@@ -18,7 +18,6 @@ const getAllCompany = catchAsync(async (req, res, next) => {
 });
 
 const approveNewCompany = catchAsync(async (req, res, next) => {
-	const { message } = req.body;
 	const { id } = req.params;
 
 	var result = await Company.updateOne(
@@ -33,7 +32,6 @@ const approveNewCompany = catchAsync(async (req, res, next) => {
 });
 
 const rejectNewCompany = catchAsync(async (req, res, next) => {
-	const { message } = req.body;
 	const { id } = req.params;
 
 	var result = await Company.updateOne(

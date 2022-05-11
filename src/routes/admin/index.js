@@ -8,6 +8,8 @@ const skillRoute = require('./skill');
 const postRoute = require('./post');
 const companyRoute = require('./company');
 const applicationRoute = require('./application');
+const notificationRoute = require('./notification');
+const authRoute = require('./auth');
 
 module.exports = (app) => {
 	router.use('/users', userRoute);
@@ -20,5 +22,9 @@ module.exports = (app) => {
 
 	router.use('/companies', companyRoute);
 	router.use('/applications', applicationRoute);
+
+	router.use('/notifications', notificationRoute);
+	router.use('/auth', authRoute);
+
 	app.use('/api/admin', router);
 };
