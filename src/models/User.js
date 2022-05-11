@@ -25,12 +25,6 @@ const UserSchema = new Schema(
 				ref: 'Room',
 			},
 		],
-		favoritePost: [
-			{
-				type: mongoose.Schema.ObjectId,
-				ref: 'Post',
-			},
-		],
 	},
 	{
 		timestamps: true,

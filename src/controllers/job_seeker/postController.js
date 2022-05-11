@@ -1,5 +1,5 @@
 const catchAsync = require('../../utils/catchAsync');
-const { Post, Company, Subcategory } = require('../../models');
+const { Post, FavoritePost, Subcategory } = require('../../models');
 const ObjectId = require('mongodb').ObjectID;
 const APIFeatures = require('../../utils/APIFeatures');
 
@@ -86,14 +86,26 @@ const getAllPost = catchAsync(async (req, res, next) => {
 				select: '_id text',
 			},
 		],
+		sort: 'createdAt',
 		offset,
 		limit,
 		lean: true,
 	});
+
+	const data = await Promise.all(
+		result.docs.map(async (e) => {
+			const isExisted =
+				(await FavoritePost.findOne({ post: e._id }).count()) > 0;
+			return {
+				...e,
+				isFavorited: isExisted,
+			};
+		})
+	);
 	res.status(200).json({
 		message: 'Get all posts',
 		totalItems: result.totalDocs,
-		data: result.docs,
+		data: data,
 		totalPages: result.totalPages,
 	});
 });
@@ -103,7 +115,7 @@ const getAllPost = catchAsync(async (req, res, next) => {
 //@access       PRIVATE
 const getPostById = catchAsync(async (req, res, next) => {
 	const { id } = req.params;
-	const post = await Post.findById(id)
+	let post = await Post.findById(id)
 		.populate({
 			path: 'skillTags',
 			select: '_id text',
@@ -112,6 +124,12 @@ const getPostById = catchAsync(async (req, res, next) => {
 		.populate('company')
 		.populate('salary')
 		.lean();
+
+	const isExisted = (await FavoritePost.findOne({ post: id }).count()) > 0;
+	post = {
+		...post,
+		isFavorited: isExisted,
+	};
 	res.status(200).json({
 		message: 'Get post by id',
 		data: post,
@@ -133,8 +151,75 @@ const getFilterOption = catchAsync(async (req, res, next) => {
 		},
 	});
 });
+
+const addFavoritePost = catchAsync(async (req, res, next) => {
+	const { userId, postId } = req.body;
+	const favoritePost = {
+		user: userId,
+		post: postId,
+	};
+	const result = await FavoritePost.create(favoritePost);
+
+	res.status(200).json({
+		message: 'Favorited',
+		data: result,
+	});
+});
+
+const deleteFavoritePost = catchAsync(async (req, res, next) => {
+	const { userId, postId } = req.body;
+	const result = await FavoritePost.deleteOne({ user: userId, post: postId });
+	res.status(200).json({
+		message: 'Deleted',
+		data: {
+			status: true,
+		},
+	});
+});
+
+const getFavoritePosts = catchAsync(async (req, res, next) => {
+	const { userId } = req.body;
+	const page = req.query.page || 1;
+	const limit = req.query.limit || 10;
+	const offset = (page - 1) * limit;
+	const result = await FavoritePost.paginate(
+		{ user: userId },
+		{
+			select: 'post',
+			populate: [
+				{
+					path: 'post',
+					populate: [
+						{
+							path: 'jobCategories',
+							select: '_id name',
+						},
+						{ path: 'company', select: '_id name' },
+						{
+							path: 'skillTags',
+							select: '_id text',
+						},
+					],
+				},
+			],
+			sort: 'updatedAt',
+			offset,
+			limit,
+			lean: true,
+		}
+	);
+	res.status(200).json({
+		message: 'Get favorite post',
+		totalItems: result.totalDocs,
+		data: result.docs,
+		totalPages: result.totalPages,
+	});
+});
 module.exports = {
 	getAllPost,
 	getPostById,
 	getFilterOption,
+	addFavoritePost,
+	deleteFavoritePost,
+	getFavoritePosts,
 };
