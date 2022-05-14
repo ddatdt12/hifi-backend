@@ -19,11 +19,11 @@ const getAllPost = catchAsync(async (req, res, next) => {
 		};
 	}
 	//filter by category
-	if (req.query.jobCategories) {
-		const arrIdSubCategory = req.query.jobCategories.split(',');
+	if (req.query.jobCategory) {
+		const arrIdSubCategory = req.query.jobCategory.split(',');
 		objQuery = {
 			...objQuery,
-			jobCategories: { $in: arrIdSubCategory },
+			jobCategory: { $in: arrIdSubCategory },
 		};
 	}
 
@@ -77,7 +77,7 @@ const getAllPost = catchAsync(async (req, res, next) => {
 	const result = await Post.paginate(objQuery, {
 		populate: [
 			{
-				path: 'jobCategories',
+				path: 'jobCategory',
 				select: '_id name',
 			},
 			{ path: 'company', select: '_id name' },
@@ -120,7 +120,7 @@ const getPostById = catchAsync(async (req, res, next) => {
 			path: 'skillTags',
 			select: '_id text',
 		})
-		.populate('jobCategories')
+		.populate('jobCategory')
 		.populate('company')
 		.populate('salary')
 		.lean();
@@ -191,7 +191,7 @@ const getFavoritePosts = catchAsync(async (req, res, next) => {
 					path: 'post',
 					populate: [
 						{
-							path: 'jobCategories',
+							path: 'jobCategory',
 							select: '_id name',
 						},
 						{ path: 'company', select: '_id name' },

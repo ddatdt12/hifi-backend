@@ -10,7 +10,7 @@ const getAllPost = catchAsync(async (req, res, next) => {
 		Post.find({
 			verficationStatus: { $in: ['pending', 'fulfilled', 'rejected'] },
 		})
-			.populate({ path: 'jobCategories', populate: { path: 'category' } })
+			.populate({ path: 'jobCategory', populate: { path: 'category' } })
 			.populate({
 				path: 'company',
 				select: '_id name',
@@ -27,7 +27,7 @@ const getAllPost = catchAsync(async (req, res, next) => {
 	const category = req.query.category?.split(',');
 	if (category) {
 		posts = posts.filter((e) =>
-			category.includes(e.jobCategories[0]?.category._id.toString())
+			category.includes(e.jobCategory[0]?.category._id.toString())
 		);
 	}
 
