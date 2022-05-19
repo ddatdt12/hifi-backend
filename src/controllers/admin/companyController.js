@@ -1,8 +1,18 @@
 const { Company } = require('../../models');
+const { getOrSetCache } = require('../../services/redis');
 const catchAsync = require('../../utils/catchAsync');
 
 const getAllCompany = catchAsync(async (req, res, next) => {
 	const { name, status } = req.query;
+	if (!name && !status) {
+		const companies = await getOrSetCache('companies', () =>
+			Company.find({})
+		);
+		return res.status(200).json({
+			message: 'Get all companies',
+			data: companies,
+		});
+	}
 
 	const companies = await Company.find({
 		name: name && { $regex: name || '', $options: 'i' },

@@ -1,15 +1,21 @@
-const { Category, SubCategory } = require('../../models');
+const { Category } = require('../../models');
 const catchAsync = require('../../utils/catchAsync');
-
+const { getOrSetCache } = require('../../services/redis');
 const getAllCategories = catchAsync(async (req, res, next) => {
-	const result = await Category.find({}).lean();
-
-	res.status(200).json({ message: 'success', data: result });
+	const result = await getOrSetCache('categories', async () =>
+		Category.find({}).lean()
+	);
+	res.status(200).json({
+		message: 'success',
+		data: result,
+	});
 });
 
 const getCategory = catchAsync(async (req, res, next) => {
 	const { id } = req.params;
-	const result = await Category.findById(id).populate('subcategories').lean();
+	const result = getOrSetCache('categories' + id, () =>
+		Category.findById(id).populate('subcategories').lean()
+	);
 
 	res.status(200).json({ message: 'success', data: result });
 });

@@ -6,7 +6,7 @@ const PostSchema = new Schema(
 	{
 		title: String,
 		jobType: String,
-		jobCategories: {
+		jobCategory: {
 			type: mongoose.Schema.ObjectId,
 			ref: 'Subcategory',
 		},
@@ -24,10 +24,13 @@ const PostSchema = new Schema(
 			},
 		],
 		preferedLangs: [String],
-
 		// FIXME: Need change in the future when location of recruiters is fixed
 		locations: [String],
 		postPhoto: String,
+		applicationDeadline: {
+			type: Date,
+			required: true,
+		},
 		verficationStatus: {
 			type: String,
 			enum: ['fulfilled', 'pending', 'rejected', 'deleted'],
@@ -46,7 +49,6 @@ const PostSchema = new Schema(
 PostSchema.plugin(mongoosePaginate);
 
 PostSchema.index({ title: 'text' });
-
 const Post = mongoose.model('Post', PostSchema);
 // Post.createIndexes({ title: 'text' });
 

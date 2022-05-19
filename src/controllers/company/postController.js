@@ -1,13 +1,13 @@
 const catchAsync = require('../../utils/catchAsync');
 const Post = require('../../models/Post');
+const { getOrSetCache } = require('../../services/redis');
 //@desc         get all posts
 //@route        GET /api/recruiter/posts
 //@access       PRIVATE
 const getAllPost = catchAsync(async (req, res) => {
-	const posts = await Post.find({})
-		.populate('jobCategories')
-		.populate('skillTags')
-		.lean();
+	const posts = await getOrSetCache('all-posts', () =>
+		Post.find({}).populate('jobCategories').populate('skillTags').lean()
+	);
 	res.status(200).json({
 		message: 'Get all post successfully',
 		data: posts,

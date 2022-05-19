@@ -2,6 +2,7 @@ const catchAsync = require('../../utils/catchAsync');
 const { Post, FavoritePost, Subcategory } = require('../../models');
 const ObjectId = require('mongodb').ObjectID;
 const APIFeatures = require('../../utils/APIFeatures');
+const { getOrSetCache } = require('../../services/redis');
 
 //@desc         get all post
 //@route        GET /api/admin/posts
@@ -115,15 +116,17 @@ const getAllPost = catchAsync(async (req, res, next) => {
 //@access       PRIVATE
 const getPostById = catchAsync(async (req, res, next) => {
 	const { id } = req.params;
-	let post = await Post.findById(id)
-		.populate({
-			path: 'skillTags',
-			select: '_id text',
-		})
-		.populate('jobCategories')
-		.populate('company')
-		.populate('salary')
-		.lean();
+	let post = getOrSetCache('posts:' + id, () =>
+		Post.findById(id)
+			.populate({
+				path: 'skillTags',
+				select: '_id text',
+			})
+			.populate('jobCategories')
+			.populate('company')
+			.populate('salary')
+			.lean()
+	);
 
 	const isExisted = (await FavoritePost.findOne({ post: id }).count()) > 0;
 	post = {
