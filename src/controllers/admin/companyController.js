@@ -1,5 +1,5 @@
 const { Company } = require('../../models');
-const { getOrSetCache } = require('../../services/redis');
+const { getOrSetCache, deleteKeyIfExist } = require('../../services/redis');
 const catchAsync = require('../../utils/catchAsync');
 
 const getAllCompany = catchAsync(async (req, res, next) => {
@@ -34,6 +34,7 @@ const approveNewCompany = catchAsync(async (req, res, next) => {
 		{ _id: id },
 		{ accountStatus: 'fullfilled' }
 	);
+	await deleteKeyIfExist('companies');
 
 	res.status(200).json({
 		message: 'Approve company success',

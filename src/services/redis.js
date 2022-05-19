@@ -16,10 +16,15 @@ const getOrSetCache = async (key, cb) => {
 		return JSON.parse(data);
 	}
 	const freshData = await cb();
-	console.log('fresh data: ', freshData);
 	console.log('Cache missing: ', key);
 	client.setEx(key, 60 * 60 * 24, JSON.stringify(freshData));
 	return freshData;
 };
 
-module.exports = { client, getOrSetCache };
+const deleteKeyIfExist = async (key) => {
+	if (await client.exists(key)) {
+		await client.del(key);
+	}
+};
+
+module.exports = { client, getOrSetCache, deleteKeyIfExist };

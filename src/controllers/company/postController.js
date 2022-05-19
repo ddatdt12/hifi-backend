@@ -5,7 +5,7 @@ const { getOrSetCache } = require('../../services/redis');
 //@route        GET /api/recruiter/posts
 //@access       PRIVATE
 const getAllPost = catchAsync(async (req, res) => {
-	const posts = await getOrSetCache('all-posts', () =>
+	const posts = await getOrSetCache('posts', () =>
 		Post.find({}).populate('jobCategories').populate('skillTags').lean()
 	);
 	res.status(200).json({
