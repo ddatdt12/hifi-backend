@@ -1,7 +1,5 @@
 const catchAsync = require('../../utils/catchAsync');
 const { Post, FavoritePost, Subcategory } = require('../../models');
-const ObjectId = require('mongodb').ObjectID;
-const APIFeatures = require('../../utils/APIFeatures');
 
 //@desc         get all post
 //@route        GET /api/admin/posts
@@ -71,6 +69,7 @@ const getAllPost = catchAsync(async (req, res, next) => {
 			};
 		}
 	}
+
 	const page = req.query.page || 1;
 	const limit = req.query.limit || 10;
 	const offset = (page - 1) * limit;
