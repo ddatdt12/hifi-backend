@@ -13,27 +13,24 @@ const getAllApplications = catchAsync(async (req, res) => {
 	});
 });
 
-// const updateApplication = catchAsync(async (req, res, next) => {
-// 	const { id } = req.params;
-// 	const { resume, phoneNumber, coverLetter } = req.body;
-// 	const application = await Application.findById(id);
-// 	if (
-// 		!application ||
-// 		application.userId.toString() !== req.user._id.toString()
-// 	) {
-// 		return next(new AppError('No Application found with that id', 404));
-// 	}
+const updateApplication = catchAsync(async (req, res, next) => {
+	const { id } = req.params;
+	const { status } = req.body;
 
-// 	const updatedApplication = await Application.findByIdAndUpdate(
-// 		id,
-// 		{ resume, phoneNumber, coverLetter },
-// 		{ new: true, runValidators: true }
-// 	);
-// 	res.status(200).json({
-// 		message: 'update application successfully',
-// 		data: updatedApplication,
-// 	});
-// });
+	const updatedApplication = await Application.findByIdAndUpdate(
+		id,
+		{ status },
+		{ new: true, runValidators: true }
+	);
+
+	if (!updatedApplication) {
+		return next(new AppError('Not found the application', 404));
+	}
+	res.status(200).json({
+		message: 'update application successfully',
+		data: updatedApplication,
+	});
+});
 
 // const deleteApplication = catchAsync(async (req, res, next) => {
 // 	const { id } = req.params;
@@ -51,4 +48,5 @@ const getAllApplications = catchAsync(async (req, res) => {
 
 module.exports = {
 	getAllApplications,
+	updateApplication,
 };
