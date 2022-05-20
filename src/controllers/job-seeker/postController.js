@@ -177,12 +177,12 @@ const deleteFavoritePost = catchAsync(async (req, res, next) => {
 });
 
 const getFavoritePosts = catchAsync(async (req, res, next) => {
-	const { userId } = req.body;
+	const { idUser } = req.params;
 	const page = req.query.page || 1;
 	const limit = req.query.limit || 10;
 	const offset = (page - 1) * limit;
 	const result = await FavoritePost.paginate(
-		{ user: userId },
+		{ user: idUser },
 		{
 			select: 'post',
 			populate: [

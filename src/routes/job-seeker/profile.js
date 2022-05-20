@@ -6,6 +6,6 @@ const postController = require('../../controllers/job-seeker/postController');
 
 router.route('/favorite/add').post(postController.addFavoritePost);
 router.route('/favorite/delete').delete(postController.deleteFavoritePost);
-router.route('/favorite-posts').get(postController.getFavoritePosts);
+router.route('/:idUser/favorite-posts').get(postController.getFavoritePosts);
 
 module.exports = router;

@@ -12,7 +12,7 @@ module.exports = (app) => {
 	router.use('/auth', authRoute);
 	router.use('/me', userRoute);
 	router.use('/notifications', notificationRoute);
-	router.use('/:id', profileRoute);
+	router.use('/profile', profileRoute);
 
 	app.use('/api/job-seeker', router);
 };
