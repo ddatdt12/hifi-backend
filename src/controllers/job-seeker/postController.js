@@ -1,7 +1,5 @@
 const catchAsync = require('../../utils/catchAsync');
 const { Post, FavoritePost, Subcategory } = require('../../models');
-const ObjectId = require('mongodb').ObjectID;
-const APIFeatures = require('../../utils/APIFeatures');
 
 //@desc         get all post
 //@route        GET /api/admin/posts
@@ -19,11 +17,11 @@ const getAllPost = catchAsync(async (req, res, next) => {
 		};
 	}
 	//filter by category
-	if (req.query.jobCategories) {
-		const arrIdSubCategory = req.query.jobCategories.split(',');
+	if (req.query.jobCategory) {
+		const arrIdSubCategory = req.query.jobCategory.split(',');
 		objQuery = {
 			...objQuery,
-			jobCategories: { $in: arrIdSubCategory },
+			jobCategory: { $in: arrIdSubCategory },
 		};
 	}
 
@@ -71,13 +69,14 @@ const getAllPost = catchAsync(async (req, res, next) => {
 			};
 		}
 	}
+
 	const page = req.query.page || 1;
 	const limit = req.query.limit || 10;
 	const offset = (page - 1) * limit;
 	const result = await Post.paginate(objQuery, {
 		populate: [
 			{
-				path: 'jobCategories',
+				path: 'jobCategory',
 				select: '_id name',
 			},
 			{ path: 'company', select: '_id name' },
@@ -91,17 +90,22 @@ const getAllPost = catchAsync(async (req, res, next) => {
 		limit,
 		lean: true,
 	});
-
-	const data = await Promise.all(
-		result.docs.map(async (e) => {
-			const isExisted =
-				(await FavoritePost.findOne({ post: e._id }).count()) > 0;
-			return {
-				...e,
-				isFavorited: isExisted,
-			};
-		})
-	);
+	let data = result.docs;
+	if (req.idUser) {
+		data = await Promise.all(
+			result.docs.map(async (e) => {
+				const isExisted =
+					(await FavoritePost.findOne({
+						post: e._id,
+						user: req.idUser,
+					}).count()) > 0;
+				return {
+					...e,
+					isFavorited: isExisted,
+				};
+			})
+		);
+	}
 	res.status(200).json({
 		message: 'Get all posts',
 		totalItems: result.totalDocs,
@@ -120,16 +124,22 @@ const getPostById = catchAsync(async (req, res, next) => {
 			path: 'skillTags',
 			select: '_id text',
 		})
-		.populate('jobCategories')
+		.populate('jobCategory')
 		.populate('company')
 		.populate('salary')
 		.lean();
 
-	const isExisted = (await FavoritePost.findOne({ post: id }).count()) > 0;
-	post = {
-		...post,
-		isFavorited: isExisted,
-	};
+	if (req.idUser) {
+		const isExisted =
+			(await FavoritePost.findOne({
+				post: id,
+				user: req.idUser,
+			}).count()) > 0;
+		post = {
+			...post,
+			isFavorited: isExisted,
+		};
+	}
 	res.status(200).json({
 		message: 'Get post by id',
 		data: post,
@@ -178,12 +188,12 @@ const deleteFavoritePost = catchAsync(async (req, res, next) => {
 });
 
 const getFavoritePosts = catchAsync(async (req, res, next) => {
-	const { userId } = req.body;
+	const { idUser } = req.params;
 	const page = req.query.page || 1;
 	const limit = req.query.limit || 10;
 	const offset = (page - 1) * limit;
 	const result = await FavoritePost.paginate(
-		{ user: userId },
+		{ user: idUser },
 		{
 			select: 'post',
 			populate: [
@@ -191,7 +201,7 @@ const getFavoritePosts = catchAsync(async (req, res, next) => {
 					path: 'post',
 					populate: [
 						{
-							path: 'jobCategories',
+							path: 'jobCategory',
 							select: '_id name',
 						},
 						{ path: 'company', select: '_id name' },

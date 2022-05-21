@@ -1,39 +1,77 @@
 const catchAsync = require('../../utils/catchAsync');
-const { Post, Company, Category } = require('../../models');
-const APIFeatures = require('../../utils/APIFeatures');
+const { Post, Company, Category, Subcategory } = require('../../models');
 
 //@desc         get all post
 //@route        GET /api/admin/posts
 //@access       PRIVATE
 const getAllPost = catchAsync(async (req, res, next) => {
-	var features = new APIFeatures(
-		Post.find({
-			verficationStatus: { $in: ['pending', 'fulfilled', 'rejected'] },
-		})
-			.populate({ path: 'jobCategories', populate: { path: 'category' } })
-			.populate({
+	let objQuery = {
+		verficationStatus: { $in: ['pending', 'fulfilled', 'rejected'] },
+	};
+
+	//Search
+	if (req.query.search) {
+		objQuery = {
+			...objQuery,
+			$text: { $search: req.query.search },
+		};
+	}
+	//filter by category
+	if (req.query.category) {
+		const arrIdCategory = req.query.category.split(',');
+		const arrIdSubCategory = await Subcategory.find(
+			{
+				category: { $in: arrIdCategory },
+			},
+			{ select: '_id' }
+		);
+		objQuery = {
+			...objQuery,
+			jobCategory: { $in: arrIdSubCategory },
+		};
+	}
+	//filter by company
+	if (req.query.company) {
+		const arrIdCompany = req.query.company.split(',');
+		objQuery = {
+			...objQuery,
+			company: { $in: arrIdCompany },
+		};
+	}
+	//filter by status
+	if (req.query.verficationStatus) {
+		objQuery = {
+			...objQuery,
+			verficationStatus: req.query.verficationStatus,
+		};
+	}
+
+	const page = req.query.page || 1;
+	const limit = req.query.limit || 10;
+	const offset = (page - 1) * limit;
+	const result = await Post.paginate(objQuery, {
+		populate: [
+			{ path: 'jobCategory', populate: { path: 'category' } },
+			{
 				path: 'company',
 				select: '_id name',
-			})
-			.lean(),
-		req.query
-	)
-		.paginating()
-		.searching()
-		.sorting()
-		.filtering(['company']);
-
-	var posts = await features.query;
-	const category = req.query.category?.split(',');
-	if (category) {
-		posts = posts.filter((e) =>
-			category.includes(e.jobCategories[0]?.category._id.toString())
-		);
-	}
+			},
+			{
+				path: 'skillTags',
+				select: '_id text',
+			},
+		],
+		sort: 'createdAt',
+		offset,
+		limit,
+		lean: true,
+	});
 
 	res.status(200).json({
 		message: 'Get all posts',
-		data: posts,
+		totalItems: result.totalDocs,
+		data: result.docs,
+		totalPages: result.totalPages,
 	});
 });
 
@@ -64,7 +102,17 @@ const approvePost = catchAsync(async (req, res, next) => {
 //@access       PRIVATE
 const getPostById = catchAsync(async (req, res, next) => {
 	const { id } = req.params;
-	const post = await Post.findById(id).populate('skillTags').lean();
+	const post = await Post.findById(id)
+		.populate({ path: 'jobCategory', populate: { path: 'category' } })
+		.populate({
+			path: 'company',
+			select: '_id name',
+		})
+		.populate({
+			path: 'skillTags',
+			select: '_id text',
+		})
+		.lean();
 	res.status(200).json({
 		message: 'Get post by id',
 		data: post,

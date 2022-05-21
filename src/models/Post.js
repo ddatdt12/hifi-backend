@@ -6,7 +6,7 @@ const PostSchema = new Schema(
 	{
 		title: String,
 		jobType: String,
-		jobCategories: {
+		jobCategory: {
 			type: mongoose.Schema.ObjectId,
 			ref: 'Subcategory',
 		},
