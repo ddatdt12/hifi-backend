@@ -3,9 +3,10 @@ const express = require('express');
 const router = express.Router();
 
 const { postController } = require('../../controllers/job-seeker');
+const { checkUser } = require('../../middlewares/auth');
 
-router.route('/').get(postController.getAllPost);
+router.get('/', checkUser, postController.getAllPost);
 router.route('/filter-option').get(postController.getFilterOption);
-router.route('/:id').get(postController.getPostById);
+router.get('/:id', checkUser, postController.getPostById);
 
 module.exports = router;

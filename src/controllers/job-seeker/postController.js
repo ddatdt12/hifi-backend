@@ -1,7 +1,5 @@
 const catchAsync = require('../../utils/catchAsync');
 const { Post, FavoritePost, Subcategory } = require('../../models');
-const ObjectId = require('mongodb').ObjectID;
-const APIFeatures = require('../../utils/APIFeatures');
 const { getOrSetCache } = require('../../services/redis');
 
 //@desc         get all post
@@ -72,6 +70,7 @@ const getAllPost = catchAsync(async (req, res, next) => {
 			};
 		}
 	}
+
 	const page = req.query.page || 1;
 	const limit = req.query.limit || 10;
 	const offset = (page - 1) * limit;
@@ -92,17 +91,22 @@ const getAllPost = catchAsync(async (req, res, next) => {
 		limit,
 		lean: true,
 	});
-
-	const data = await Promise.all(
-		result.docs.map(async (e) => {
-			const isExisted =
-				(await FavoritePost.findOne({ post: e._id }).count()) > 0;
-			return {
-				...e,
-				isFavorited: isExisted,
-			};
-		})
-	);
+	let data = result.docs;
+	if (req.idUser) {
+		data = await Promise.all(
+			result.docs.map(async (e) => {
+				const isExisted =
+					(await FavoritePost.findOne({
+						post: e._id,
+						user: req.idUser,
+					}).count()) > 0;
+				return {
+					...e,
+					isFavorited: isExisted,
+				};
+			})
+		);
+	}
 	res.status(200).json({
 		message: 'Get all posts',
 		totalItems: result.totalDocs,
@@ -129,11 +133,17 @@ const getPostById = catchAsync(async (req, res, next) => {
 			.lean()
 	);
 
-	const isExisted = (await FavoritePost.findOne({ post: id }).count()) > 0;
-	post = {
-		...post,
-		isFavorited: isExisted,
-	};
+	if (req.idUser) {
+		const isExisted =
+			(await FavoritePost.findOne({
+				post: id,
+				user: req.idUser,
+			}).count()) > 0;
+		post = {
+			...post,
+			isFavorited: isExisted,
+		};
+	}
 	res.status(200).json({
 		message: 'Get post by id',
 		data: post,
@@ -182,12 +192,12 @@ const deleteFavoritePost = catchAsync(async (req, res, next) => {
 });
 
 const getFavoritePosts = catchAsync(async (req, res, next) => {
-	const { userId } = req.body;
+	const { idUser } = req.params;
 	const page = req.query.page || 1;
 	const limit = req.query.limit || 10;
 	const offset = (page - 1) * limit;
 	const result = await FavoritePost.paginate(
-		{ user: userId },
+		{ user: idUser },
 		{
 			select: 'post',
 			populate: [
