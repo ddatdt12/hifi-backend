@@ -1,9 +1,14 @@
 const app = require('./app');
 const connectDB = require('./database');
 const { ConnectMessage, ConnectNotification } = require('./src/socket');
+const { client } = require('./src/services/redis');
 const port = process.env.PORT || 5000;
 
 connectDB();
+
+(async () => {
+	await client.connect();
+})();
 
 const server = app.listen(port, () => {
 	console.log(`App running on port ${port}...`);

@@ -1,5 +1,6 @@
 const catchAsync = require('../../utils/catchAsync');
 const { Post, FavoritePost, Subcategory } = require('../../models');
+const { getOrSetCache } = require('../../services/redis');
 
 //@desc         get all post
 //@route        GET /api/admin/posts
@@ -119,15 +120,18 @@ const getAllPost = catchAsync(async (req, res, next) => {
 //@access       PRIVATE
 const getPostById = catchAsync(async (req, res, next) => {
 	const { id } = req.params;
-	let post = await Post.findById(id)
-		.populate({
-			path: 'skillTags',
-			select: '_id text',
-		})
-		.populate('jobCategory')
-		.populate('company')
-		.populate('salary')
-		.lean();
+
+	let post = await getOrSetCache('posts:' + id, () =>
+		Post.findById(id)
+			.populate({
+				path: 'skillTags',
+				select: '_id text',
+			})
+			.populate('jobCategory')
+			.populate('company')
+			.populate('salary')
+			.lean()
+	);
 
 	if (req.idUser) {
 		const isExisted =

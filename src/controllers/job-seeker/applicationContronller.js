@@ -4,8 +4,8 @@ const AppError = require('../../utils/AppError');
 const Post = require('../../models/Post');
 
 //@desc         get me
-//@route        POST /api/user/me
-//@access       PUBLIC
+//@route        GET /api/user/me/applications
+//@access       PRIVATE
 const getApplications = catchAsync(async (req, res) => {
 	const applicationQuery = Application.find({ userId: req.user._id });
 	if (req.query) {
@@ -20,6 +20,10 @@ const getApplications = catchAsync(async (req, res) => {
 		data: applications,
 	});
 });
+
+//@desc         getApplicationDetail
+//@route        GET /api/user/me/applications/:id
+//@access       PRIVATE
 const getApplicationDetail = catchAsync(async (req, res, next) => {
 	const application = await Application.findById(req.params.id)
 		.populate('user')
@@ -35,6 +39,10 @@ const getApplicationDetail = catchAsync(async (req, res, next) => {
 		data: application,
 	});
 });
+
+//@desc         create new application
+//@route        POST /api/user/me/applications
+//@access       PRIVATE
 const createApplication = catchAsync(async (req, res, next) => {
 	const { postId, resume, phoneNumber, coverLetter } = req.body;
 
