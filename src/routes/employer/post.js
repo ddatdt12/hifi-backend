@@ -8,7 +8,11 @@ router
 	.route('/')
 	.get(postController.getAllPost)
 	.post(postController.createJobPost);
-
-router.route('/:idCompany').get(postController.getAllPostByCompany);
+router.route('/filter-option').get(postController.getFilterOption);
+router
+	.route('/:id')
+	.get(postController.getPostById)
+	.delete(postController.deletePost);
+// router.route('/:idCompany').get(postController.getAllPostByCompany);
 
 module.exports = router;
