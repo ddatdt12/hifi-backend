@@ -15,12 +15,19 @@ const getMe = catchAsync(async (req, res) => {
 //@desc         update profile
 //@route        PUT /api/job-seeker/me
 //@access       PUBLIC
-const updateMe = catchAsync(async (req, res) => {
+const updateMe = catchAsync(async (req, res, next) => {
 	if (req.body.candidateStatus) {
 		const candidateStatus = req.body.candidateStatus;
+		if (candidateStatus !== 'I_AM_LOOKING_FOR_JOB') {
+			req.body.preferredStartDate = null;
+		} else if (!req.body.preferredStartDate) {
+			return next(
+				new AppError('Please provide preferred start date', 400)
+			);
+		}
 		await JobInterest.findOne({ userId: req.user._id })
 			.then((jobInterest) => {
-				jobInterest.candidateStatus = candidateStatus;
+				jobInterest.preferredStartDate = req.body.preferredStartDate;
 				return jobInterest.save();
 			})
 			.catch((err) => {
