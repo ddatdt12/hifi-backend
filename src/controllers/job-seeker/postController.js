@@ -164,16 +164,18 @@ const getFilterOption = catchAsync(async (req, res, next) => {
 
 const addFavoritePost = catchAsync(async (req, res, next) => {
 	const { userId, postId } = req.body;
-	const favoritePost = {
-		user: userId,
-		post: postId,
-	};
-	const result = await FavoritePost.create(favoritePost);
+	if (userId && postId) {
+		const favoritePost = {
+			user: userId,
+			post: postId,
+		};
+		const result = await FavoritePost.create(favoritePost);
 
-	res.status(200).json({
-		message: 'Favorited',
-		data: result,
-	});
+		res.status(200).json({
+			message: 'Favorited',
+			data: result,
+		});
+	}
 });
 
 const deleteFavoritePost = catchAsync(async (req, res, next) => {
