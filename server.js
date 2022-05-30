@@ -1,15 +1,21 @@
 const app = require('./app');
 const connectDB = require('./database');
-const ConnectSocket = require('./src/socket');
+const { ConnectMessage, ConnectNotification } = require('./src/socket');
+const { client } = require('./src/services/redis');
 const port = process.env.PORT || 5000;
 
 connectDB();
+
+(async () => {
+	await client.connect();
+})();
 
 const server = app.listen(port, () => {
 	console.log(`App running on port ${port}...`);
 });
 
-ConnectSocket(server);
+ConnectMessage(server);
+ConnectNotification(server);
 
 process.on('uncaughtException', (err) => {
 	console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');

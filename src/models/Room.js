@@ -5,8 +5,10 @@ const RoomSchema = new Schema(
 	{
 		chatters: [
 			{
-				type: mongoose.Types.ObjectId,
-				ref: 'User',
+				chatterId: String,
+				name: String,
+				avatar: String,
+				type: String,
 			},
 		],
 		messages: [
@@ -19,6 +21,7 @@ const RoomSchema = new Schema(
 	},
 	{
 		timestamps: true,
+		typeKey: '$type',
 	}
 );
 

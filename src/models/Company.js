@@ -38,6 +38,10 @@ const CompanySchema = new Schema(
 		size: {
 			type: String,
 		},
+		logo: {
+			type: String,
+		},
+		images: [String],
 		contactName: String,
 		summary: String,
 		accountStatus: {
@@ -45,6 +49,17 @@ const CompanySchema = new Schema(
 			enum: ['pending', 'rejected', 'fullfilled', 'deleted'],
 			default: 'pending',
 		},
+		notifications: [
+			{
+				message: String,
+				createdAt: Date,
+				redirectUrl: String,
+				isRead: {
+					type: Boolean,
+					default: false,
+				},
+			},
+		],
 	},
 	{
 		timestamps: true,

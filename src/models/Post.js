@@ -1,16 +1,15 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 const Schema = mongoose.Schema;
 
 const PostSchema = new Schema(
 	{
 		title: String,
 		jobType: String,
-		jobCategories: [
-			{
-				type: mongoose.Schema.ObjectId,
-				ref: 'Subcategory',
-			},
-		],
+		jobCategory: {
+			type: mongoose.Schema.ObjectId,
+			ref: 'Subcategory',
+		},
 		salary: {
 			min: Number,
 			max: Number,
@@ -25,10 +24,12 @@ const PostSchema = new Schema(
 			},
 		],
 		preferedLangs: [String],
-
 		// FIXME: Need change in the future when location of recruiters is fixed
 		locations: [String],
-		postPhoto: String,
+		applicationDeadline: {
+			type: Date,
+			required: true,
+		},
 		verficationStatus: {
 			type: String,
 			enum: ['fulfilled', 'pending', 'rejected', 'deleted'],
@@ -44,9 +45,10 @@ const PostSchema = new Schema(
 	}
 );
 
-PostSchema.index({ title: 'text' });
+PostSchema.plugin(mongoosePaginate);
 
+PostSchema.index({ title: 'text' });
 const Post = mongoose.model('Post', PostSchema);
-Post.createIndexes({ title: 'text' });
+// Post.createIndexes({ title: 'text' });
 
 module.exports = Post;

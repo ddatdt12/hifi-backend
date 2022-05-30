@@ -4,6 +4,7 @@ const router = express.Router();
 
 const { checkEmailUser } = require('../controllers/commonController');
 
-router.get('/check-employer-or-jobseeker', checkEmailUser);
-
-module.exports = router;
+module.exports = (app) => {
+	router.get('/check-employer-or-jobseeker', checkEmailUser);
+	app.use('/api', router);
+};
