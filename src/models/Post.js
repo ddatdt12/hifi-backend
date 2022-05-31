@@ -24,7 +24,6 @@ const PostSchema = new Schema(
 			},
 		],
 		preferedLangs: [String],
-		// FIXME: Need change in the future when location of recruiters is fixed
 		locations: [String],
 		applicationDeadline: {
 			type: Date,
