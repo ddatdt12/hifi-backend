@@ -10,7 +10,20 @@ const degrees = require('../../data/degrees.json').data;
 const majors = require('../../data/majors.json').data;
 
 const getSkills = catchAsync(async (req, res) => {
-	const { q, selected, limit } = req.query;
+	const { q, selected, ids, limit } = req.query;
+
+	console.log('ids', ids);
+
+	if (ids) {
+		const skills = await Skill.find({
+			_id: { $in: ids.split(',') },
+		});
+		return res.status(200).json({
+			message: 'get skills successfully',
+			data: skills,
+		});
+	}
+
 	const selectedSkill = [];
 	if (selected) {
 		selected.split(',').forEach((id) => {
