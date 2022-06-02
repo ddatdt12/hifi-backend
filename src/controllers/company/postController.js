@@ -3,13 +3,13 @@ const Post = require('../../models/Post');
 const Subcategory = require('../../models/Subcategory');
 const Company = require('../../models/Company');
 const Category = require('../../models/Category');
-const { getOrSetCache } = require('../../services/redis');
+const { getOrSetCache, deleteKeyIfExist } = require('../../services/redis');
 
 //@desc         create job post
 //@route        POST /api/recruiter/posts
 //@access       PRIVATE
 const createJobPost = catchAsync(async (req, res) => {
-	const post = await Post.create(req.body);
+	const post = await Post.create({ ...req.body, company: req.user._id });
 
 	res.status(200).json({
 		message: 'create new post successfully',
@@ -78,7 +78,7 @@ const getAllPost = catchAsync(async (req, res) => {
 				select: '_id text',
 			},
 		],
-		sort: 'createdAt',
+		sort: '-createdAt',
 		offset,
 		limit,
 		lean: true,
@@ -102,7 +102,6 @@ const getPostById = catchAsync(async (req, res) => {
 			.populate({ path: 'jobCategory', populate: { path: 'category' } })
 			.populate({
 				path: 'company',
-				select: '_id name',
 			})
 			.populate({
 				path: 'skillTags',
@@ -112,6 +111,24 @@ const getPostById = catchAsync(async (req, res) => {
 	);
 	res.status(200).json({
 		message: 'Get post by id',
+		data: post,
+	});
+});
+
+//@desc         get by id
+//@route        PUT /api/admin/posts/:id
+//@access       PRIVATE
+const updatePost = catchAsync(async (req, res) => {
+	const { id } = req.params;
+	const post = await Post.findByIdAndUpdate(id, req.body, {
+		new: true,
+		runValidators: true,
+	});
+	deleteKeyIfExist('posts:' + id).catch((err) =>
+		console.log('clear cache error', err)
+	);
+	res.status(200).json({
+		message: 'Update post successfully',
 		data: post,
 	});
 });
@@ -128,6 +145,10 @@ const deletePost = catchAsync(async (req, res) => {
 		},
 		{ new: true, runValidators: true }
 	);
+	deleteKeyIfExist('posts:' + id).catch((err) =>
+		console.log('clear cache error', err)
+	);
+
 	res.status(200).json({
 		message: 'Delete posts',
 		data: result,
@@ -156,5 +177,6 @@ module.exports = {
 	createJobPost,
 	getPostById,
 	deletePost,
+	updatePost,
 	getFilterOption,
 };
