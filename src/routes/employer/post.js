@@ -13,6 +13,7 @@ router
 	.route('/:id')
 	.get(postController.getPostById)
 	.delete(postController.deletePost);
-// router.route('/:idCompany').get(postController.getAllPostByCompany);
+
+router.route('/company/:idCompany').get(postController.getAllPostByCompany);
 
 module.exports = router;

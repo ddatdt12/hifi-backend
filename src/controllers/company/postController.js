@@ -151,10 +151,24 @@ const getFilterOption = catchAsync(async (req, res) => {
 		},
 	});
 });
+
+//@desc         get job post
+//@route        GET /api/employer/posts/company/:idCompany
+//@access       PRIVATE
+const getAllPostByCompany = catchAsync(async (req, res) => {
+	const { idCompany } = req.params;
+	const posts = await Post.find({ idCompany: idCompany }).select(['title']);
+	res.status(200).json({
+		message: 'Get all post by company successfully',
+		data: posts,
+	});
+});
+
 module.exports = {
 	getAllPost,
 	createJobPost,
 	getPostById,
 	deletePost,
 	getFilterOption,
+	getAllPostByCompany,
 };
