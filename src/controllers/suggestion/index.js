@@ -62,7 +62,9 @@ const getRoomsByUserId = catchAsync(async (req, res, next) => {
 	const { userId } = req.params;
 	const rooms = await Room.find({
 		chatters: { $elemMatch: { chatterId: userId } },
-	}).lean();
+	})
+		.sort({ 'messages.createdAt': -1 })
+		.lean();
 	res.status(200).json({
 		message: 'Get all room by user',
 		value: rooms,
