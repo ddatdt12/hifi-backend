@@ -102,7 +102,6 @@ const getPostById = catchAsync(async (req, res) => {
 			.populate({ path: 'jobCategory', populate: { path: 'category' } })
 			.populate({
 				path: 'company',
-				select: '_id name',
 			})
 			.populate({
 				path: 'skillTags',

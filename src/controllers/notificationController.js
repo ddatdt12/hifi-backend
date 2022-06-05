@@ -1,3 +1,4 @@
+const Admin = require('../models/Admin');
 const Company = require('../models/Company');
 const User = require('../models/User');
 
@@ -16,6 +17,9 @@ module.exports = (io) => {
 					break;
 				case 'employee':
 					handleUpdateNotiUser(request, socket);
+					break;
+				case 'admin':
+					handleUpdateNotiAdmin(request, socket);
 					break;
 				default:
 					break;
@@ -39,10 +43,33 @@ const handleUpdateNotiUser = (request, socket) => {
 					redirectUrl: request.redirectUrl,
 				},
 			},
-		}
+		},
+		{ new: true }
 	)
 		.then((res) => {
-			socket.to(request.receiver).emit('receiveNotification', request);
+			socket.to(request.receiver).emit('receiveNotification', res);
+		})
+		.catch((error) => {
+			console.log(error);
+		});
+};
+
+const handleUpdateNotiAdmin = (request, socket) => {
+	Admin.findOneAndUpdate(
+		{ _id: request.receiver },
+		{
+			$push: {
+				notifications: {
+					message: request.message,
+					createdAt: request.createdAt,
+					redirectUrl: request.redirectUrl,
+				},
+			},
+		},
+		{ new: true }
+	)
+		.then((res) => {
+			socket.to(request.receiver).emit('receiveNotification', res);
 		})
 		.catch((error) => {
 			console.log(error);
