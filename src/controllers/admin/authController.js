@@ -13,13 +13,60 @@ const login = catchAsync(async (req, res, next) => {
 	const isMatch = await admin.comparePassword(password);
 
 	if (!isMatch) {
-		return next(new AppError('Email or password is incorrect', 401));
+		return next(new AppError('Password is incorrect', 401));
 	}
 
 	res.status(200).json({
 		message: 'Login sucessfully',
 		data: admin,
 		accessToken: admin.generateToken(),
+	});
+});
+
+const resetPassword = catchAsync(async (req, res, next) => {
+	const { username, password, confirmPassword } = req.body;
+
+	if (password !== confirmPassword) {
+		return next(
+			new AppError("Password and confirm password doesn't match", 400)
+		);
+	}
+	const admin = await Admin.findOne({
+		username,
+	});
+
+	if (!admin) {
+		return next(new AppError('Username is incorrect', 404));
+	}
+
+	await Admin.updateOne({ username }, { password: confirmPassword });
+
+	res.status(200).json({
+		message: 'Reset password sucessfully',
+	});
+});
+
+const changePassword = catchAsync(async (req, res, next) => {
+	const { username, currentPassword, password } = req.body;
+
+	const admin = await Admin.findOne({
+		username,
+	});
+
+	if (!admin) {
+		return next(new AppError('Username is incorrect', 404));
+	}
+
+	const isMatch = await admin.comparePassword(currentPassword);
+
+	if (!isMatch) {
+		return next(new AppError('Current Password is incorrect', 401));
+	}
+
+	await Admin.updateOne({ username }, { password: password });
+
+	res.status(200).json({
+		message: 'Reset password sucessfully',
 	});
 });
 
@@ -30,4 +77,4 @@ const verifyAccessToken = catchAsync(async (req, res, next) => {
 	});
 });
 
-module.exports = { login, verifyAccessToken };
+module.exports = { login, verifyAccessToken, resetPassword, changePassword };

@@ -35,10 +35,11 @@ const AdminSchema = new Schema(
 	}
 );
 
-AdminSchema.pre('save', async function (next) {
-	if (!this.isModified('password')) return next();
+AdminSchema.pre('updateOne', async function (next) {
+	console.log(this);
+	if (!this._update.password) return next();
 
-	this.password = await bcrypt.hash(this.password, 12);
+	this._update.password = await bcrypt.hash(this._update.password, 12);
 	next();
 });
 
