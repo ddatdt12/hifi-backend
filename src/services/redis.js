@@ -9,7 +9,6 @@ client.on('connect', () => {
 });
 client.on('error', (err) => console.log('Redis Client Error: ', err));
 const getOrSetCache = async (key, cb) => {
-	// await client.flushAll();
 	const data = await client.get(key);
 	if (data) {
 		console.log('Cache hit: ', key);
