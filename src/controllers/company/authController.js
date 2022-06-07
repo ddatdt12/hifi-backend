@@ -27,7 +27,7 @@ const login = catchAsync(async (req, res, next) => {
 //@route        GET /api/employer/auth/register
 //@access       PUBLIC
 const register = catchAsync(async (req, res, next) => {
-	const { email, password, confirmPassword, location } = req.body;
+	const { email, password, confirmPassword } = req.body;
 
 	if (password !== confirmPassword) {
 		return next(
@@ -39,9 +39,9 @@ const register = catchAsync(async (req, res, next) => {
 		return next(new AppError('Email is already registered', 404));
 	}
 
-	req.body.locations = [location];
 	const newCompany = await Company.create(req.body);
 	newCompany.password = undefined;
+
 	res.status(200).json({
 		message: 'Register sucessfully',
 		data: newCompany,
@@ -59,4 +59,22 @@ const verifyAccessToken = catchAsync(async (req, res, next) => {
 	});
 });
 
-module.exports = { login, register, verifyAccessToken };
+const updateCompany = catchAsync(async (req, res, next) => {
+	const { idCompany } = req.params;
+
+	const updatedCompany = await Company.findByIdAndUpdate(
+		idCompany,
+		req.body,
+		{ new: true, runValidators: true }
+	);
+
+	if (!updatedCompany) {
+		return next(new AppError('Not found the company', 404));
+	}
+	res.status(200).json({
+		message: 'Update successfully',
+		data: updatedCompany,
+	});
+});
+
+module.exports = { login, register, verifyAccessToken, updateCompany };
