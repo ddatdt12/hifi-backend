@@ -12,6 +12,8 @@ module.exports = (app) => {
 	router.get('/universities', suggestionController.getUniversities);
 	router.get('/majors', suggestionController.getMajors);
 	router.get('/degrees', suggestionController.getDegrees);
+	router.get('/:categoryId/posts', suggestionController.getPosts);
+	router.get('/companies', suggestionController.getCompanies);
 
 	app.use('/api/suggestion', router);
 };
