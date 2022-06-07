@@ -73,6 +73,15 @@ CompanySchema.pre('save', async function (next) {
 	next();
 });
 
+CompanySchema.pre('findOneAndUpdate', async function (next) {
+	let update = { ...this.getUpdate() };
+	if (update.password) {
+		update.password = await bcrypt.hash(update.password, 12);
+		this.setUpdate(update);
+	}
+	next();
+});
+
 CompanySchema.methods.comparePassword = async function (password) {
 	const isMatch = await bcrypt.compare(password, this.password);
 	this.password = undefined;

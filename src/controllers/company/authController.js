@@ -77,4 +77,38 @@ const updateCompany = catchAsync(async (req, res, next) => {
 	});
 });
 
-module.exports = { login, register, verifyAccessToken, updateCompany };
+//@desc         employer register
+//@route        GET /api/employer/auth/register
+//@access       PUBLIC
+const updatePassword = catchAsync(async (req, res, next) => {
+	const { password, newPassword } = req.body;
+	const { idUser } = req.params;
+
+	const company = await Company.findOne({ _id: idUser }).select('password');
+
+	const isMatch = await company.comparePassword(password);
+	if (!isMatch) {
+		return next(new AppError('Password is not correct', 401));
+	}
+
+	const newCompany = await Company.findByIdAndUpdate(
+		idUser,
+		{ password: newPassword },
+		{ new: true, runValidators: true }
+	);
+	newCompany.password = undefined;
+
+	res.status(200).json({
+		message: ' sucessfully',
+		data: newCompany,
+		accessToken: newCompany.generateToken(),
+	});
+});
+
+module.exports = {
+	login,
+	register,
+	verifyAccessToken,
+	updatePassword,
+	updateCompany,
+};
