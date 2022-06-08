@@ -8,6 +8,7 @@ const { getOrSetCache } = require('../../services/redis');
 const getAllPost = catchAsync(async (req, res, next) => {
 	var objQuery = {
 		verficationStatus: 'fulfilled',
+		applicationDeadline: { $gte: Date.now() },
 	};
 
 	//search
@@ -80,7 +81,7 @@ const getAllPost = catchAsync(async (req, res, next) => {
 				path: 'jobCategory',
 				select: '_id name',
 			},
-			{ path: 'company', select: '_id name' },
+			{ path: 'company', select: '_id name images' },
 			{
 				path: 'skillTags',
 				select: '_id text',

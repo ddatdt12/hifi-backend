@@ -103,7 +103,11 @@ const getPosts = catchAsync(async (req, res, next) => {
 	const listSub = await Subcategory.find({ category: categoryId });
 	const arrIdSubCategory = listSub.map((subcategory) => subcategory._id);
 
-	const posts = await Post.find({ jobCategory: { $in: arrIdSubCategory } })
+	const posts = await Post.find({
+		verficationStatus: 'fulfilled',
+		applicationDeadline: { $gte: Date.now() },
+		jobCategory: { $in: arrIdSubCategory },
+	})
 		.limit(8)
 		.populate('company')
 		.lean();
