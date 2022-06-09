@@ -53,6 +53,31 @@ const joinRoom = async (socket, data) => {
 		{ upsert: true }
 	).lean();
 
+	let newChatters = [];
+
+	newChatters = room.chatters.map(async (chatter) => {
+		if (chatter.type === 'company') {
+			var company = await Company.findById(chatter.chatterId).lean();
+			chatter.chatterId = company._id;
+			chatter.name = company.name;
+			chatter.avatar = company.logo;
+			chatter.type = 'company';
+		}
+
+		if (chatter.type === 'user') {
+			var user = await User.findById(chatter.chatterId).lean();
+			chatter.avatar = user.photoUrl;
+			chatter.chatterId = user._id;
+			chatter.name = user.name;
+			chatter.type = 'user';
+		}
+
+		return chatter;
+	});
+
+	const res = await Promise.all(newChatters);
+	await Room.updateOne({ _id: data }, { $set: { chatters: res } });
+
 	socket.join(room._id.toString());
 };
 
