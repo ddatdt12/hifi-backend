@@ -143,7 +143,15 @@ const getCompany = catchAsync(async (req, res, next) => {
 		idCompany: idCompany,
 		verficationStatus: 'fulfilled',
 		applicationDeadline: { $gte: Date.now() },
-	}).lean();
+	})
+		.populate({
+			path: 'skillTags',
+			select: '_id text',
+		})
+		.populate('jobCategory')
+		.populate('salary')
+		.populate('company')
+		.lean();
 
 	res.status(200).json({
 		message: 'Get company',
