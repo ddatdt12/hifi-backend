@@ -32,7 +32,11 @@ const PostSchema = new Schema(
 			},
 		],
 		preferedLangs: [String],
-		locations: [String],
+		locations: [
+			{
+				type: mongoose.Schema.ObjectId,
+			},
+		],
 		applicationDeadline: {
 			type: Date,
 			required: true,

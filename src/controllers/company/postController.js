@@ -97,6 +97,7 @@ const getAllPost = catchAsync(async (req, res) => {
 //@access       PRIVATE
 const getPostById = catchAsync(async (req, res) => {
 	const { id } = req.params;
+
 	const post = await getOrSetCache('posts:' + id, () =>
 		Post.findById(id)
 			.populate({ path: 'jobCategory', populate: { path: 'category' } })
@@ -109,6 +110,8 @@ const getPostById = catchAsync(async (req, res) => {
 			})
 			.lean()
 	);
+
+	console.log('Post: post');
 	res.status(200).json({
 		message: 'Get post by id',
 		data: post,
@@ -161,7 +164,7 @@ const deletePost = catchAsync(async (req, res) => {
 const getFilterOption = catchAsync(async (req, res) => {
 	//company option
 	const companies = await Company.find({}, { name: 1, _id: 1 });
-	//catelogy option
+	//category option
 	const categories = await Category.find({}, { name: 1 });
 
 	res.status(200).json({
