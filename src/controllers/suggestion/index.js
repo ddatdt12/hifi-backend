@@ -4,13 +4,29 @@ const Category = require('../../models/Category');
 const User = require('../../models/User');
 const Utils = require('../../utils');
 const Room = require('../../models/Room');
+const Post = require('../../models/Post');
+const Subcategory = require('../../models/Subcategory');
+const Company = require('../../models/Company');
 
 const universities = require('../../data/universities.json').data;
 const degrees = require('../../data/degrees.json').data;
 const majors = require('../../data/majors.json').data;
 
 const getSkills = catchAsync(async (req, res) => {
-	const { q, selected, limit } = req.query;
+	const { q, selected, ids, limit } = req.query;
+
+	console.log('ids', ids);
+
+	if (ids) {
+		const skills = await Skill.find({
+			_id: { $in: ids.split(',') },
+		});
+		return res.status(200).json({
+			message: 'get skills successfully',
+			data: skills,
+		});
+	}
+
 	const selectedSkill = [];
 	if (selected) {
 		selected.split(',').forEach((id) => {
@@ -44,10 +60,11 @@ const getAllUser = catchAsync(async (req, res, next) => {
 
 const getRoomsByUserId = catchAsync(async (req, res, next) => {
 	const { userId } = req.params;
-	console.log(userId);
 	const rooms = await Room.find({
 		chatters: { $elemMatch: { chatterId: userId } },
-	}).lean();
+	})
+		.sort({ 'messages.createdAt': -1 })
+		.lean();
 	res.status(200).json({
 		message: 'Get all room by user',
 		value: rooms,
@@ -81,6 +98,35 @@ const getMajors = catchAsync(async (req, res, next) => {
 	});
 });
 
+const getPosts = catchAsync(async (req, res, next) => {
+	const categoryId = req.params.categoryId;
+	const listSub = await Subcategory.find({ category: categoryId });
+	const arrIdSubCategory = listSub.map((subcategory) => subcategory._id);
+
+	const posts = await Post.find({
+		verficationStatus: 'fulfilled',
+		applicationDeadline: { $gte: Date.now() },
+		jobCategory: { $in: arrIdSubCategory },
+	})
+		.limit(8)
+		.populate('company')
+		.lean();
+
+	res.status(200).json({
+		message: 'Get all posts in landingpage by category',
+		value: posts,
+	});
+});
+
+const getCompanies = catchAsync(async (req, res, next) => {
+	const companies = await Company.find().limit(6).lean();
+
+	res.status(200).json({
+		message: 'Get all posts in landingpage by category',
+		value: companies,
+	});
+});
+
 module.exports = {
 	getSkills,
 	getAllCategory,
@@ -90,4 +136,6 @@ module.exports = {
 	getDegrees,
 	getMajors,
 	getAllRooms,
+	getPosts,
+	getCompanies,
 };

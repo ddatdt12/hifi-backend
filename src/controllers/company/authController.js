@@ -27,7 +27,7 @@ const login = catchAsync(async (req, res, next) => {
 //@route        GET /api/employer/auth/register
 //@access       PUBLIC
 const register = catchAsync(async (req, res, next) => {
-	const { email, password, confirmPassword, location } = req.body;
+	const { email, password, confirmPassword } = req.body;
 
 	if (password !== confirmPassword) {
 		return next(
@@ -39,9 +39,9 @@ const register = catchAsync(async (req, res, next) => {
 		return next(new AppError('Email is already registered', 404));
 	}
 
-	req.body.locations = [location];
 	const newCompany = await Company.create(req.body);
 	newCompany.password = undefined;
+
 	res.status(200).json({
 		message: 'Register sucessfully',
 		data: newCompany,
@@ -59,4 +59,56 @@ const verifyAccessToken = catchAsync(async (req, res, next) => {
 	});
 });
 
-module.exports = { login, register, verifyAccessToken };
+const updateCompany = catchAsync(async (req, res, next) => {
+	const { idCompany } = req.params;
+
+	const updatedCompany = await Company.findByIdAndUpdate(
+		idCompany,
+		req.body,
+		{ new: true, runValidators: true }
+	);
+
+	if (!updatedCompany) {
+		return next(new AppError('Not found the company', 404));
+	}
+	res.status(200).json({
+		message: 'Update successfully',
+		data: updatedCompany,
+	});
+});
+
+//@desc         employer register
+//@route        GET /api/employer/auth/register
+//@access       PUBLIC
+const updatePassword = catchAsync(async (req, res, next) => {
+	const { password, newPassword } = req.body;
+	const { idUser } = req.params;
+
+	const company = await Company.findOne({ _id: idUser }).select('password');
+
+	const isMatch = await company.comparePassword(password);
+	if (!isMatch) {
+		return next(new AppError('Password is not correct', 401));
+	}
+
+	const newCompany = await Company.findByIdAndUpdate(
+		idUser,
+		{ password: newPassword },
+		{ new: true, runValidators: true }
+	);
+	newCompany.password = undefined;
+
+	res.status(200).json({
+		message: ' sucessfully',
+		data: newCompany,
+		accessToken: newCompany.generateToken(),
+	});
+});
+
+module.exports = {
+	login,
+	register,
+	verifyAccessToken,
+	updatePassword,
+	updateCompany,
+};

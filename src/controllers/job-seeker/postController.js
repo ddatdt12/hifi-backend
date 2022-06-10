@@ -1,12 +1,15 @@
 const catchAsync = require('../../utils/catchAsync');
+const Application = require('../../models/Application');
 const { Post, FavoritePost, Subcategory } = require('../../models');
+const { getOrSetCache } = require('../../services/redis');
 
 //@desc         get all post
 //@route        GET /api/admin/posts
 //@access       PRIVATE
-const getAllPost = catchAsync(async (req, res, next) => {
+const getAllPost = catchAsync(async (req, res) => {
 	var objQuery = {
 		verficationStatus: 'fulfilled',
+		applicationDeadline: { $gte: Date.now() },
 	};
 
 	//search
@@ -79,7 +82,7 @@ const getAllPost = catchAsync(async (req, res, next) => {
 				path: 'jobCategory',
 				select: '_id name',
 			},
-			{ path: 'company', select: '_id name' },
+			{ path: 'company', select: '_id name images locations' },
 			{
 				path: 'skillTags',
 				select: '_id text',
@@ -99,13 +102,29 @@ const getAllPost = catchAsync(async (req, res, next) => {
 						post: e._id,
 						user: req.idUser,
 					}).count()) > 0;
+
+				const locationMap = new Map(
+					e?.company.locations.map((l) => [l._id.toString(), l])
+				);
+
 				return {
 					...e,
+					locations: e.locations
+						.map((l) => locationMap.get(l.toString()))
+						.filter((l) => l),
 					isFavorited: isExisted,
 				};
 			})
 		);
 	}
+
+	console.log(
+		'data: ',
+		data.map((l) => ({
+			locations: l.locations,
+			companyLoca: l.company.locations,
+		}))
+	);
 	res.status(200).json({
 		message: 'Get all posts',
 		totalItems: result.totalDocs,
@@ -117,19 +136,32 @@ const getAllPost = catchAsync(async (req, res, next) => {
 //@desc         get by id
 //@route        GET /api/admin/posts/:id
 //@access       PRIVATE
-const getPostById = catchAsync(async (req, res, next) => {
+const getPostById = catchAsync(async (req, res) => {
 	const { id } = req.params;
-	let post = await Post.findById(id)
-		.populate({
-			path: 'skillTags',
-			select: '_id text',
-		})
-		.populate('jobCategory')
-		.populate('company')
-		.populate('salary')
-		.lean();
+
+	let post = await getOrSetCache('posts:' + id, () =>
+		Post.findById(id)
+			.populate({
+				path: 'skillTags',
+				select: '_id text',
+			})
+			.populate('jobCategory')
+			.populate('company')
+			.populate('salary')
+			.lean()
+	);
+
+	const locationMap = new Map(post?.company.locations.map((l) => [l._id, l]));
+
+	post.locations = post.locations
+		.map((l) => locationMap.get(l))
+		.filter((l) => l);
 
 	if (req.idUser) {
+		const application = await Application.findOne({
+			userId: req.idUser,
+			postId: id,
+		});
 		const isExisted =
 			(await FavoritePost.findOne({
 				post: id,
@@ -137,9 +169,12 @@ const getPostById = catchAsync(async (req, res, next) => {
 			}).count()) > 0;
 		post = {
 			...post,
+			application,
 			isFavorited: isExisted,
 		};
 	}
+
+	console.log('post: ', post);
 	res.status(200).json({
 		message: 'Get post by id',
 		data: post,
@@ -149,7 +184,7 @@ const getPostById = catchAsync(async (req, res, next) => {
 //@desc         get option filter (company, catelogy)
 //@route        GET /api/admin/posts/filter-option
 //@access       PRIVATE
-const getFilterOption = catchAsync(async (req, res, next) => {
+const getFilterOption = catchAsync(async (req, res) => {
 	//Level option
 	//catelogy option
 	const subCategories = await Subcategory.find({}, { name: 1 });
@@ -162,7 +197,7 @@ const getFilterOption = catchAsync(async (req, res, next) => {
 	});
 });
 
-const addFavoritePost = catchAsync(async (req, res, next) => {
+const addFavoritePost = catchAsync(async (req, res) => {
 	const { userId, postId } = req.body;
 	if (userId && postId) {
 		const favoritePost = {
@@ -178,7 +213,7 @@ const addFavoritePost = catchAsync(async (req, res, next) => {
 	}
 });
 
-const deleteFavoritePost = catchAsync(async (req, res, next) => {
+const deleteFavoritePost = catchAsync(async (req, res) => {
 	const { userId, postId } = req.body;
 	const result = await FavoritePost.deleteOne({ user: userId, post: postId });
 	res.status(200).json({
@@ -189,7 +224,7 @@ const deleteFavoritePost = catchAsync(async (req, res, next) => {
 	});
 });
 
-const getFavoritePosts = catchAsync(async (req, res, next) => {
+const getFavoritePosts = catchAsync(async (req, res) => {
 	const { idUser } = req.params;
 	const page = req.query.page || 1;
 	const limit = req.query.limit || 10;

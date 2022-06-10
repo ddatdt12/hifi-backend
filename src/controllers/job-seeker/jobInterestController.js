@@ -31,7 +31,7 @@ const updatejobInterest = catchAsync(async (req, res, next) => {
 		jobInterest &&
 		jobInterest.userId.toString() !== req.user._id.toString()
 	) {
-		return next(new AppError('No job interest fou	nd with that id', 404));
+		return next(new AppError('No job interest found with that id', 404));
 	}
 
 	const updatedJobInterest = await JobInterest.findByIdAndUpdate(

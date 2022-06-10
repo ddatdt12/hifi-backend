@@ -8,13 +8,14 @@ const SkillSchema = new Schema({
 	},
 });
 SkillSchema.statics.search = function (q, selected, limit) {
+	const andQuery = [{ text: new RegExp(q, 'gi') }];
+	if (selected && selected.length > 0) {
+		andQuery.push({
+			_id: { $nin: selected },
+		});
+	}
 	let query = this.find({
-		$and: [
-			{
-				_id: { $nin: selected },
-			},
-			{ text: new RegExp(q, 'gi') },
-		],
+		$and: andQuery,
 	});
 	if (limit) {
 		query.limit(limit);
