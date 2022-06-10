@@ -82,7 +82,7 @@ const getAllPost = catchAsync(async (req, res) => {
 				path: 'jobCategory',
 				select: '_id name',
 			},
-			{ path: 'company', select: '_id name images locations' },
+			{ path: 'company', select: '_id name logo locations' },
 			{
 				path: 'skillTags',
 				select: '_id text',
