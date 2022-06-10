@@ -15,8 +15,6 @@ const majors = require('../../data/majors.json').data;
 const getSkills = catchAsync(async (req, res) => {
 	const { q, selected, ids, limit } = req.query;
 
-	console.log('ids', ids);
-
 	if (ids) {
 		const skills = await Skill.find({
 			_id: { $in: ids.split(',') },
@@ -119,11 +117,37 @@ const getPosts = catchAsync(async (req, res, next) => {
 });
 
 const getCompanies = catchAsync(async (req, res, next) => {
-	const companies = await Company.find().limit(6).lean();
+	const { limit } = req.query;
+
+	const companies = await Company.find()
+		.select(['-notifications'])
+		.limit(limit)
+		.populate('industries')
+		.lean();
 
 	res.status(200).json({
-		message: 'Get all posts in landingpage by category',
-		value: companies,
+		message: 'Get all companies',
+		data: companies,
+	});
+});
+
+const getCompany = catchAsync(async (req, res, next) => {
+	const { idCompany } = req.params;
+
+	const company = await Company.findOne({ _id: idCompany })
+		.select(['-notifications'])
+		.populate('industries')
+		.lean();
+
+	const posts = await Post.find({
+		idCompany: idCompany,
+		verficationStatus: 'fulfilled',
+		applicationDeadline: { $gte: Date.now() },
+	}).lean();
+
+	res.status(200).json({
+		message: 'Get company',
+		data: { ...company, posts: posts },
 	});
 });
 
@@ -138,4 +162,5 @@ module.exports = {
 	getAllRooms,
 	getPosts,
 	getCompanies,
+	getCompany,
 };
