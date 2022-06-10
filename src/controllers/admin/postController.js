@@ -106,13 +106,23 @@ const getPostById = catchAsync(async (req, res, next) => {
 		.populate({ path: 'jobCategory', populate: { path: 'category' } })
 		.populate({
 			path: 'company',
-			select: '_id name',
+			select: '_id name locations',
 		})
 		.populate({
 			path: 'skillTags',
 			select: '_id text',
 		})
 		.lean();
+
+	console.log('post', post);
+	const locationMap = new Map(
+		post?.company.locations.map((l) => [l._id.toString(), l])
+	);
+
+	post.locations = post.locations
+		.map((l) => locationMap.get(l.toString()))
+		.filter((l) => l);
+
 	res.status(200).json({
 		message: 'Get post by id',
 		data: post,
