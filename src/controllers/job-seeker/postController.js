@@ -174,7 +174,6 @@ const getPostById = catchAsync(async (req, res) => {
 		};
 	}
 
-	console.log('post: ', post);
 	res.status(200).json({
 		message: 'Get post by id',
 		data: post,
