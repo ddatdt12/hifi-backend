@@ -1,4 +1,4 @@
 module.exports = {
-	origin: true,
+	origin: 'https://hifi.vercel.app/',
 	credentials: true,
 };
