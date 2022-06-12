@@ -51,7 +51,7 @@ const setJWTCookie = (res, cookies = 'over', expires = 5 * 1000) => {
 		secure: process.env.NODE_ENV === 'development' ? false : true,
 		httpOnly: true,
 		sameSite: process.env.NODE_ENV === 'development' ? true : 'none',
-		domain: process.env.NODE_ENV === 'development' ? '' : '.vercel.app',
+		domain: process.env.NODE_ENV === 'development' ? '' : 'hifi.vercel.app',
 		// secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
 	});
 };
