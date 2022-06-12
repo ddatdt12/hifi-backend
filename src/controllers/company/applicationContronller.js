@@ -3,8 +3,8 @@ const Application = require('../../models/Application');
 const AppError = require('../../utils/AppError');
 
 const getAllApplications = catchAsync(async (req, res) => {
-	const { postId } = req.params;
-	const applications = await Application.find({ postId: postId })
+	const { idPost } = req.params;
+	const applications = await Application.find({ postId: idPost })
 		.populate('user')
 		.lean();
 	res.status(200).json({
