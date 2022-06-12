@@ -1,4 +1,7 @@
 module.exports = {
-	origin: 'https://hifi.vercel.app/',
+	origin:
+		process.env.NODE_ENV === 'development'
+			? true
+			: 'https://hifi.vercel.app/',
 	credentials: true,
 };
