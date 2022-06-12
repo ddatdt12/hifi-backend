@@ -48,9 +48,8 @@ const register = catchAsync(async (req, res) => {
 const setJWTCookie = (res, cookies = 'over', expires = 5 * 1000) => {
 	res.cookie('accessToken', cookies, {
 		expires: new Date(Date.now() + expires),
-		secure: false,
-		samesite: 'none',
-		// secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+		sameSite: 'none',
+		secure: process.env.NODE_ENV === 'production',
 	});
 };
 
