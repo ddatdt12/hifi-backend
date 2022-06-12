@@ -12,6 +12,7 @@ const globalErrorHandler = require('./src/middlewares/globalErrorHandler');
 const AppError = require('./src/utils/AppError');
 const routesDirName = `${__dirname}/src/routes/`;
 
+app.set('trust proxy', 1);
 app.use(cors(corsOptions));
 
 app.use(express.json());
