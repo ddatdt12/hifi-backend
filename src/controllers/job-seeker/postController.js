@@ -240,7 +240,7 @@ const getFavoritePosts = catchAsync(async (req, res) => {
 							path: 'jobCategory',
 							select: '_id name',
 						},
-						{ path: 'company', select: '_id name' },
+						{ path: 'company', select: '_id name logo' },
 						{
 							path: 'skillTags',
 							select: '_id text',

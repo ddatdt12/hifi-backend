@@ -140,7 +140,7 @@ const getCompany = catchAsync(async (req, res, next) => {
 		.lean();
 
 	const posts = await Post.find({
-		idCompany: idCompany,
+		company: idCompany,
 		verficationStatus: 'fulfilled',
 		applicationDeadline: { $gte: Date.now() },
 	})
