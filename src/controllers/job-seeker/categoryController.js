@@ -29,6 +29,7 @@ const getTotalJobs = async (category) => {
 	const arrIdSubCategory = listSub.map((subcategory) => subcategory._id);
 	const posts = await Post.find({
 		jobCategory: { $in: arrIdSubCategory },
+		verficationStatus: 'fulfilled',
 	}).lean();
 	const newCategory = { ...category, jobs: posts.length };
 	return newCategory;

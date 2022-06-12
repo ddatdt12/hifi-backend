@@ -174,7 +174,6 @@ const getPostById = catchAsync(async (req, res) => {
 		};
 	}
 
-	console.log('post: ', post);
 	res.status(200).json({
 		message: 'Get post by id',
 		data: post,
@@ -241,7 +240,7 @@ const getFavoritePosts = catchAsync(async (req, res) => {
 							path: 'jobCategory',
 							select: '_id name',
 						},
-						{ path: 'company', select: '_id name' },
+						{ path: 'company', select: '_id name logo' },
 						{
 							path: 'skillTags',
 							select: '_id text',
