@@ -181,7 +181,7 @@ const getFilterOption = catchAsync(async (req, res) => {
 //@access       PRIVATE
 const getAllPostByCompany = catchAsync(async (req, res) => {
 	const { idCompany } = req.params;
-	const posts = await Post.find({ idCompany: idCompany }).select(['title']);
+	const posts = await Post.find({ company: idCompany }).select(['title']);
 	res.status(200).json({
 		message: 'Get all post by company successfully',
 		data: posts,
