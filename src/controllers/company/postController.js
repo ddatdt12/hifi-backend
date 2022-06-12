@@ -9,8 +9,18 @@ const { getOrSetCache, deleteKeyIfExist } = require('../../services/redis');
 //@route        POST /api/recruiter/posts
 //@access       PRIVATE
 const createJobPost = catchAsync(async (req, res) => {
-	const post = await Post.create({ ...req.body, company: req.user._id });
+	if (
+		req.user.accountStatus === 'pending' ||
+		req.user.accountStatus === 'rejected' ||
+		req.user.accountStatus === 'deleted'
+	) {
+		return res.status(400).json({
+			message:
+				'Your account is not active yet. Please wait for admin to approve your account.',
+		});
+	}
 
+	const post = await Post.create({ ...req.body, company: req.user._id });
 	res.status(200).json({
 		message: 'create new post successfully',
 		post,
@@ -18,7 +28,7 @@ const createJobPost = catchAsync(async (req, res) => {
 });
 
 //@desc         get all post
-//@route        GET /api/admin/posts
+//@route        GET /api/employer/posts
 //@access       PRIVATE
 const getAllPost = catchAsync(async (req, res) => {
 	let objQuery = {
@@ -118,7 +128,7 @@ const getPostById = catchAsync(async (req, res) => {
 });
 
 //@desc         get by id
-//@route        PUT /api/admin/posts/:id
+//@route        PUT /api/employer/posts/:id
 //@access       PRIVATE
 const updatePost = catchAsync(async (req, res) => {
 	const { id } = req.params;
@@ -136,7 +146,7 @@ const updatePost = catchAsync(async (req, res) => {
 });
 
 //@desc         delete post
-//@route        DELETE /api/admin/posts/:id
+//@route        DELETE /api/employer/posts/:id
 //@access       PRIVATE
 const deletePost = catchAsync(async (req, res) => {
 	const { id } = req.params;
@@ -158,7 +168,7 @@ const deletePost = catchAsync(async (req, res) => {
 });
 
 //@desc         get option filter (company, catelogy)
-//@route        GET /api/admin/posts/filter-option
+//@route        GET /api/employer/posts/filter-option
 //@access       PRIVATE
 const getFilterOption = catchAsync(async (req, res) => {
 	//company option
