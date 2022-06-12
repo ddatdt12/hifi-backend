@@ -146,7 +146,6 @@ const protectAdmin = catchAsync(async (req, res, next) => {
 	) {
 		accessToken = req.headers.authorization.split(' ')[1];
 	} else if (req.cookies.accessToken) {
-		console.log('Mic check: ', req.cookies);
 		accessToken = req.cookies.accessToken;
 	}
 
