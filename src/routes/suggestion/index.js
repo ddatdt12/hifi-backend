@@ -2,6 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const suggestionController = require('../../controllers/suggestion');
+const { checkEmailUser } = require('../../controllers/commonController');
 
 module.exports = (app) => {
 	router.get('/skills', suggestionController.getSkills);
@@ -15,6 +16,7 @@ module.exports = (app) => {
 	router.get('/:categoryId/posts', suggestionController.getPosts);
 	router.get('/companies/:idCompany', suggestionController.getCompany);
 	router.get('/companies', suggestionController.getCompanies);
+	router.get('/check-employer-or-jobseeker', checkEmailUser);
 
 	app.use('/api/suggestion', router);
 };

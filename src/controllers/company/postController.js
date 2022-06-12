@@ -111,7 +111,6 @@ const getPostById = catchAsync(async (req, res) => {
 			.lean()
 	);
 
-	console.log('Post: post');
 	res.status(200).json({
 		message: 'Get post by id',
 		data: post,
